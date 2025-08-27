@@ -20,7 +20,8 @@ inputs = {
   container_name        = local.common_vars.azure.storage_container_name
 
   tags = {
-    Environment = "dev"
-    Owner       = "landingzone"
+    Environment = "Desarollo"
+    Owner       = "juan.uni@doublevpartners.com"
+    Project     = "Precredit"
   }
 }
