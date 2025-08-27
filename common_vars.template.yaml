@@ -1,0 +1,108 @@
+# Información del entorno
+country: "$COUNTRY"
+env: "$ENVIRONMENT"
+project_name: "$PROJECT_NAME"
+resource_group: "$RESOURCE_GROUP"
+
+# Información de la cuenta y región
+azure:
+  subscription_id: "$DATA_SUBSCRIPTION_ID"
+  tenant_id: "$TENANT_ID"
+  region: "$AZURE_REGION"
+  global_region: "$AZURE_GLOBAL_REGION"
+  resource_group: "$RESOURCE_GROUP"
+  storage_account_name: "$AZURE_STORAGE_ACCOUNT"
+  storage_container_name: "$AZURE_STORAGE_CONTAINER"
+  client_id: "$CLIENT_ID"
+  project_name: "$PROJECT_NAME"
+
+# Configuración de red
+network:
+  address_space: $NETWORK_ADDRESS_SPACE
+  subnet1_name: $NETWORK_SUBNET_NAME_1
+  subnet1_address_prefix: $NETWORK_SUBNET_ADDRESS_PREFIX_1
+  subnet2_name: $NETWORK_SUBNET_NAME_2
+  subnet2_address_prefix: $NETWORK_SUBNET_ADDRESS_PREFIX_2
+  subnet3_name: $NETWORK_SUBNET_NAME_3
+  subnet3_address_prefix: $NETWORK_SUBNET_ADDRESS_PREFIX_3
+  subnet4_name: $NETWORK_SUBNET_NAME_4
+  subnet4_address_prefix: $NETWORK_SUBNET_ADDRESS_PREFIX_4
+# Configuración de Azure Active Directory
+
+# Configuración de SQL Server
+sql:
+  name: "$SQL_SERVER_NAME"
+  admin_login: "$SQL_ADMIN_USERNAME"
+  admin_password: "$SQL_ADMIN_PASSWORD"
+  version: "$SQL_SERVER_VERSION"
+  minimum_tls_version: "$SQL_MINIMUM_TLS_VERSION"
+  public_network_access_enabled: "$PUBLIC_NETWORK_ACCESS_ENABLED"
+  aad_administrator_object_id: "$AAD_OBJECT_ID"
+  aad_administrator_login: "$AAD_LOGIN_NAME"
+  firewall_rules:
+    general_rcsa: "$SQL_FIREWALL_RULE_GENERAL_RCSA"
+    general_rcsa_extra: "$SQL_FIREWALL_RULE_GENERAL_RCSA_EXTRA"
+    particular_rcsa_1: "$SQL_FIREWALL_RULE_PARTICULAR_RCSA_1"
+
+# Configuración de Base de Datos
+database:
+  name: "$SQL_DATABASE_NAME"
+  sku_name: "$SQL_DATABASE_SKU"
+  collation: "$SQL_DATABASE_COLLATION"
+  license_type: "$SQL_LICENSE_TYPE"
+  max_size_gb: "$SQL_DATABASE_MAX_SIZE_GB"
+  storage_account_type: "$SQL_STORAGE_ACCOUNT_TYPE"
+
+# Configuración de Storage para Auditoría Sql
+auditoria:
+  storage_account_name: "$STORAGE_ACCOUNT_AUDITORIA_NAME"
+  storage_container_name: "$STORAGE_CONTAINER_AUDITORIA_NAME"
+
+vpn:
+  name_subnet_gateway: "$NAME_SUBNET_GATEWAY"
+  gateway_subnet_prefix: "$GATEWAY_SUBNET_PREFIX"
+  vpn_client_address_space: "$VPN_CLIENT_ADDRESS_SPACE"
+  public_ip_name: "$PUBLIC_IP_NAME"
+  gateway_name: "$GATEWAY_NAME"
+  ip_configuration_name: "$IP_CONFIGURATION_NAME"
+  gateway_sku: "$GATEWAY_SKU"
+
+# Configuración de Storage para Auditoría Sql
+
+private_endpoint:
+  private_endpoint_name: "$PRIVATE_ENDPOINT_NAME"
+
+# Configuración de Budget
+
+# budget_subscription:
+#   name: "$BUDGET_NAME"
+#   amount: $BUDGET_AMOUNT
+#   time_grain: "$BUDGET_TIME_GRAIN"
+#   start_date: "$BUDGET_START_DATE"
+#   end_date: "$BUDGET_END_DATE"
+#   threshold_80: 80
+#   operator_80: "GreaterThan"
+#   contact_emails_80: "$BUDGET_EMAILS_80"
+#   threshold_90: 90
+#   operator_90: "GreaterThan"
+#   contact_emails_90: "$BUDGET_EMAILS_90"
+
+budget:
+  name_grup: "$BUDGET_NAME_GRUP"
+  amount_grup: $BUDGET_AMOUNT_GRUP
+  time_grain: "$BUDGET_TIME_GRAIN"
+  start_date: "$BUDGET_START_DATE"
+  end_date: "$BUDGET_END_DATE"
+  threshold_80: 80
+  operator_80: "GreaterThan"
+  contact_emails_80: "$BUDGET_EMAILS_80"
+  threshold_90: 90
+  operator_90: "GreaterThan"
+  contact_emails_90: "$BUDGET_EMAILS_90"
+
+# Etiquetas (tags)
+tags:
+  Environment: "$ENVIRONMENT"
+  Owner: "$PR_OWNER"
+  Tipo_Recurso: "$MODULE_NAME"
+  Proyecto: "$PROJECT_NAME"
