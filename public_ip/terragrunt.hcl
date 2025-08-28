@@ -16,7 +16,7 @@ terraform {
 
 
 inputs = {
-  name                = "pip-agw-dev"
+  name                = "pip-agw-${local.common_vars.environment}"
   resource_group_name   = local.common_vars.rg_roles.apps
   location             = local.common_vars.azure.region
   allocation_method   = "Static"
