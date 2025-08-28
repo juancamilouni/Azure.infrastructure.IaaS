@@ -12,7 +12,7 @@ remote_state {
   }
 
   config = {
-    resource_group_name  = local.common_vars.azure.resource_group
+    resource_group_name  = local.common_vars.rg_roles.data
     storage_account_name = local.common_vars.azure.storage_account_name
     container_name       = local.common_vars.azure.storage_container_name
     key                  = "${path_relative_to_include()}/terraform.tfstate"   
@@ -31,7 +31,7 @@ provider "azurerm" {
   tenant_id                  = "${local.common_vars.azure.tenant_id}"
   client_id                  = "${local.common_vars.azure.client_id}"
   use_oidc                   = true
-  skip_provider_registration = true
+  skip_provider_registration = false
 }
 
 provider "azapi" {}
