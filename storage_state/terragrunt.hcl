@@ -3,11 +3,6 @@ locals {
   common_vars = yamldecode(file("../common_vars.yaml"))
 }
 
-# ⛔️ SOLO en este componente: usa backend local (bootstrap)
-remote_state {
-  backend = "local"
-  config  = { path = "terraform.tfstate" }
-}
 
 # 📦 Repositorio del módulo Terraform
 terraform {
