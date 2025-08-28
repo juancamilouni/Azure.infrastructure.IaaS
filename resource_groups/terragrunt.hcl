@@ -1,8 +1,11 @@
-# 📥 Variables globales
-locals {
-  common_vars = yamldecode(file(find_in_parent_folders("common_vars.yaml")))
+include {
+  path = find_in_parent_folders("terragrunt_azure.hcl")
 }
 
+# 📥 Variables globales
+locals {
+  common_vars = yamldecode(file("../common_vars.yaml"))
+}
 
 # 📦 Repositorio del módulo Terraform
 terraform {
@@ -10,10 +13,10 @@ terraform {
 }
 
 inputs = {
-  subscription_id      = local.common.azure.subscription_id
-  tenant_id            = local.common.azure.tenant_id
-  location             = local.common.azure.region
-  resource_group_names = values(local.common.rg_roles)
+  subscription_id     = local.common_vars.azure.subscription_id
+  tenant_id           = local.common_vars.azure.tenant_id
+  location            = local.common_vars.azure.region
+  resource_group_names = values(local.common_vars.rg_roles)
 
   tags = {
     environment = local.common_vars.environment
