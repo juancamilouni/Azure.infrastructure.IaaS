@@ -23,6 +23,7 @@ terraform {
   source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git/<modulo>?ref=main"
 }
 
+
 inputs = {
   subscription_id      = local.common_vars.azure.subscription_id
   tenant_id            = local.common_vars.azure.tenant_id
