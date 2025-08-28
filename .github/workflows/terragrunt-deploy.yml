@@ -173,7 +173,7 @@ jobs:
             exit 1
           fi
 
-          sed -i -E "s|source *=.*|source = \"git::https://x-access-token:${INSTALL_TOKEN}@github.com/ocrcsa/it_landing-zone-IaC.git//${MODULO}?ref=${VERSION}\"|" terragrunt.hcl
+          sed -i -E "s|source *=.*|source = \"git::https://x-access-token:${INSTALL_TOKEN}@github.com/juancamilouni/Azure.infrastructure.IaaS//${MODULO}?ref=${VERSION}\"|" terragrunt.hcl
           
       - name: Verificar y limpiar bloque generate si provider ya existe
         working-directory: ${{ github.event.client_payload.module }}
