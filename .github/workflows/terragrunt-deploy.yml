@@ -19,8 +19,6 @@ jobs:
       ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
       ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.DATA_SUBSCRIPTION_ID }}
-      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
-      AZURE_STORAGE_CONTAINER: ${{ secrets.AZURE_STORAGE_CONTAINER }}
       ARM_USE_OIDC: true
 
     steps:
