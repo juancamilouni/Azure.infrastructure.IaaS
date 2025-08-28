@@ -5,7 +5,7 @@ locals {
 
 # 📦 Repositorio del módulo Terraform
 terraform {
-  source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure..git/<modulo>?ref=main"
+  source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git/<modulo>?ref=main"
 }
 
 inputs = {
