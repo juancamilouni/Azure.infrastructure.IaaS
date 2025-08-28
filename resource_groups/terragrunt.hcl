@@ -1,3 +1,7 @@
+include {
+  path = find_in_parent_folders("terragrunt_azure.hcl")
+}
+
 # 📥 Variables globales
 locals {
   common_vars = yamldecode(file("../common_vars.yaml"))
