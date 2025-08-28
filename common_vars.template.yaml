@@ -1,6 +1,6 @@
 # Información del entorno
 country: "$COUNTRY"
-env: "$ENVIRONMENT"
+environment: "$ENVIRONMENT"
 project_name: "$PROJECT_NAME"
 resource_group: "$RESOURCE_GROUP"
 

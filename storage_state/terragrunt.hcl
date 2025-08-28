@@ -5,7 +5,7 @@ locals {
 
 # 📦 Repositorio del módulo Terraform
 terraform {
-  source = "git::https://github.com/ocrcsa/it_landing-zone-IaC.git//<modulo>?ref=main"
+  source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure..git/<modulo>?ref=main"
 }
 
 # 📤 Variables que pasan al módulo
@@ -20,7 +20,7 @@ inputs = {
   container_name        = local.common_vars.azure.storage_container_name
 
   tags = {
-    Environment = "Desarollo"
+    environment = local.common_vars.environment
     Owner       = "juan.uni@doublevpartners.com"
     Project     = "Precredit"
   }

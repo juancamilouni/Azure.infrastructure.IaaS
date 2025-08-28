@@ -5,7 +5,7 @@ locals {
 
 # 📦 Repositorio del módulo Terraform
 terraform {
-  source = "git::https://github.com/ocrcsa/it_landing-zone-IaC.git//<modulo>?ref=main"
+  source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure..git/<modulo>?ref=main"
 }
 
 inputs = {
@@ -15,7 +15,7 @@ inputs = {
   resource_group_name = "${local.common_vars.project_name}-rg"
   
   tags = {
-    Environment = "Desarollo"
+    environment = local.common_vars.environment
     Owner       = "juan.uni@doublevpartners.com"
     Project     = "Precredit"
   }
