@@ -39,7 +39,6 @@ inputs = {
       name             = local.common_vars.network.subnet2_name
       address_prefixes = local.common_vars.network.subnet2_address_prefix
       network_security_group_id  = dependency.nsg.outputs.nsg_subnet2_id
-      service_endpoints = ["Microsoft.Sql"] # ✅ habilita Service Endpoint para SQL Server
     },
     {
       name             = local.common_vars.network.subnet3_name
