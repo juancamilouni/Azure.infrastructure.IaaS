@@ -7,6 +7,12 @@ dependency "resource_group" {
   config_path = "../resource_groups"
 }
 
+# 🔗 Dependencia: resource_groups (debe haberse desplegado antes)
+dependency "resource_groups" {
+  config_path = "../resource_groups"
+  skip_outputs = false
+}
+
 # 📥 Variables globales
 locals {
   common_vars = yamldecode(file("../common_vars.yaml"))
