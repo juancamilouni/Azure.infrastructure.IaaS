@@ -1,0 +1,171 @@
+name: Destrucción resiliente de módulo con Terragrunt
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: 'Módulo a destruir (ej. sql_database)'
+        required: true
+      version:
+        description: 'Versión del módulo (ej. sql_database-v0.0.70)'
+        required: true
+      environment:
+        description: 'Ambiente (dev, qa, prod)'
+        required: true
+        type: environment
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.DATA_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: true
+      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+      AZURE_STORAGE_CONTAINER: ${{ secrets.AZURE_STORAGE_CONTAINER }}
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.DATA_SUBSCRIPTION_ID }}
+
+      - name: Instalar Terragrunt y Terraform
+        run: |
+          curl -sL https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64 -o terragrunt
+          chmod +x terragrunt
+          sudo mv terragrunt /usr/local/bin/
+          sudo apt-get update && sudo apt-get install -y unzip
+          curl -sLo terraform.zip https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip
+          unzip terraform.zip && sudo mv terraform /usr/local/bin/
+
+      - name: Validar existencia del módulo
+        run: |
+          if [ ! -d "${{ inputs.module }}" ]; then
+            echo "❌ El módulo no existe: ${{ inputs.module }}"
+            exit 1
+          fi
+
+      - name: Regenerar common_vars.yaml
+        run: |
+          echo "🔁 Regenerando archivo common_vars.yaml..."
+          export DATA_SUBSCRIPTION_ID="${{ secrets.DATA_SUBSCRIPTION_ID }}"
+          export TENANT_ID="${{ secrets.TENANT_ID }}"
+          export AZURE_STORAGE_ACCOUNT="${{ secrets.AZURE_STORAGE_ACCOUNT }}"
+          export AZURE_STORAGE_CONTAINER="${{ secrets.AZURE_STORAGE_CONTAINER }}"
+          export CLIENT_ID="${{ secrets.CLIENT_ID }}"
+          export SQL_ADMIN_PASSWORD="${{ secrets.SQL_ADMIN_PASSWORD}}"
+          export AAD_OBJECT_ID="${{ vars.AAD_OBJECT_ID }}"
+          export AAD_LOGIN_NAME="${{ vars.AAD_LOGIN_NAME }}"
+          export AZURE_GLOBAL_REGION="${{ vars.AZURE_GLOBAL_REGION }}"
+          export AZURE_REGION="${{ vars.AZURE_REGION }}"
+          export COUNTRY="${{ vars.COUNTRY }}"
+          export ENVIRONMENT="${{ vars.ENVIRONMENT }}"
+          export NETWORK_ADDRESS_SPACE="${{ vars.NETWORK_ADDRESS_SPACE }}"
+          export NETWORK_SUBNET_NAME_1="${{ vars.NETWORK_SUBNET_NAME_1 }}"
+          export NETWORK_SUBNET_NAME_2="${{ vars.NETWORK_SUBNET_NAME_2 }}"
+          export NETWORK_SUBNET_NAME_3="${{ vars.NETWORK_SUBNET_NAME_3 }}"
+          export NETWORK_SUBNET_NAME_4="${{ vars.NETWORK_SUBNET_NAME_4 }}"
+          export NETWORK_SUBNET_ADDRESS_PREFIX_1="${{ vars.NETWORK_SUBNET_ADDRESS_PREFIX_1}}"
+          export NETWORK_SUBNET_ADDRESS_PREFIX_2="${{ vars.NETWORK_SUBNET_ADDRESS_PREFIX_2}}"
+          export NETWORK_SUBNET_ADDRESS_PREFIX_3="${{ vars.NETWORK_SUBNET_ADDRESS_PREFIX_3}}"
+          export NETWORK_SUBNET_ADDRESS_PREFIX_4="${{ vars.NETWORK_SUBNET_ADDRESS_PREFIX_4}}"
+          export PROJECT_NAME="${{ vars.PROJECT_NAME }}"
+          export PR_OWNER="${{ vars.PR_OWNER }}"
+          export RESOURCE_GROUP="${{ vars.RESOURCE_GROUP }}"
+          export SQL_ADMIN_USERNAME="${{ vars.SQL_ADMIN_USERNAME }}"
+          export SQL_DATABASE_COLLATION="${{ vars.SQL_DATABASE_COLLATION }}"
+          export SQL_DATABASE_MAX_SIZE_GB="${{ vars.SQL_DATABASE_MAX_SIZE_GB }}"
+          export SQL_DATABASE_NAME="${{ vars.SQL_DATABASE_NAME }}"
+          export SQL_DATABASE_SKU="${{ vars.SQL_DATABASE_SKU }}"
+          export SQL_LICENSE_TYPE="${{ vars.SQL_LICENSE_TYPE }}"
+          export SQL_SERVER_NAME="$(echo '${{ vars.SQL_SERVER_NAME }}' | tr -d '\n' | tr -d '\r' | xargs)"
+          export SQL_SERVER_VERSION="${{ vars.SQL_SERVER_VERSION }}"
+          export SQL_STORAGE_ACCOUNT_TYPE="${{ vars.SQL_STORAGE_ACCOUNT_TYPE }}"
+          export SQL_MINIMUM_TLS_VERSION="${{ vars.SQL_MINIMUM_TLS_VERSION }}"
+          export SQL_FIREWALL_RULE_GENERAL_RCSA="${{ vars.SQL_FIREWALL_RULE_GENERAL_RCSA }}"
+          export SQL_FIREWALL_RULE_GENERAL_RCSA_EXTRA="${{ vars.SQL_FIREWALL_RULE_GENERAL_RCSA_EXTRA }}"
+          export SQL_FIREWALL_RULE_PARTICULAR_RCSA_1="${{ vars.SQL_FIREWALL_RULE_PARTICULAR_RCSA_1 }}"
+          envsubst < common_vars.template.yaml > common_vars.yaml
+
+
+      - name: Obtener token dinámico de GitHub App
+        id: app_token
+        env:
+          APP_ID: "1854620"
+          INSTALLATION_ID: "83107821"
+          PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
+        run: |
+          pip install PyJWT cryptography requests
+          JWT=$(python3 -c "import jwt, time, os; \
+            token = jwt.encode({'iat': int(time.time()) - 60, 'exp': int(time.time()) + 600, 'iss': os.environ['APP_ID']}, os.environ['PRIVATE_KEY'].encode(), algorithm='RS256'); \
+            print(token)")
+          TOKEN_RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer $JWT" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/app/installations/${INSTALLATION_ID}/access_tokens)
+          INSTALL_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .token)
+          if [ "$INSTALL_TOKEN" = "null" ] || [ -z "$INSTALL_TOKEN" ]; then
+            echo "❌ Error al obtener token de instalación."
+            echo "$TOKEN_RESPONSE"
+            exit 1
+          fi
+          echo "::add-mask::$INSTALL_TOKEN"
+          echo "token=$INSTALL_TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Sobrescribir source con token, módulo y versión
+        working-directory: ${{ github.event.inputs.module }}
+        run: |
+          INSTALL_TOKEN="${{ steps.app_token.outputs.token }}"
+          sed -i -E "s|source *=.*|source = \"git::https://x-access-token:${INSTALL_TOKEN}@github.com/ocrcsa/it_landing-zone-IaC.git//${{ github.event.inputs.module }}?ref=${{ github.event.inputs.version }}\"|" terragrunt.hcl
+
+      - name: Verificar y limpiar bloque generate si provider ya existe
+        working-directory: ${{ github.event.inputs.module }}
+        run: |
+          if grep -q 'provider\s\+\"azurerm\"' *.tf; then
+            echo "⚠️ Provider definido. Eliminando bloque generate."
+            sed -i '/generate\s\+"provider"/,/EOF/ d' terragrunt.hcl || true
+          fi
+
+      - name: Ejecutar Terragrunt Destroy
+        working-directory: ${{ github.event.inputs.module }}
+        run: |
+          echo "🚀 terragrunt init"
+          terragrunt init
+
+          echo "📊 terragrunt plan previo a destroy"
+          terragrunt plan > destroy_plan.log 2>&1 || true
+
+          if grep -q "Error acquiring the state lock" destroy_plan.log; then
+            LOCK_ID=$(grep -oE "[a-f0-9\-]{36}" destroy_plan.log | head -n 1)
+            if [ -n "$LOCK_ID" ]; then
+              echo "🔓 Ejecutando force-unlock con ID: $LOCK_ID"
+              terragrunt force-unlock -force "$LOCK_ID"
+            fi
+          fi
+
+          echo "🔥 Ejecutando terragrunt destroy..."
+          terragrunt destroy --non-interactive --terragrunt-ignore-external-dependencies -auto-approve > destroy_output.log 2>&1
+          DESTROY_EXIT_CODE=$?
+
+          cat destroy_output.log
+
+          if [ $DESTROY_EXIT_CODE -ne 0 ]; then
+            echo "❌ El destroy falló. Abortando."
+            exit $DESTROY_EXIT_CODE
+          fi
+
+          echo "✅ Destrucción exitosa del módulo ${{ github.event.inputs.module }} en ${{ github.event.inputs.environment }}"
