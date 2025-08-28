@@ -4,17 +4,24 @@ environment: "$ENVIRONMENT"
 project_name: "$PROJECT_NAME"
 resource_group: "$RESOURCE_GROUP"
 
+
 # Información de la cuenta y región
 azure:
   subscription_id: "$DATA_SUBSCRIPTION_ID"
   tenant_id: "$TENANT_ID"
   region: "$AZURE_REGION"
-  global_region: "$AZURE_GLOBAL_REGION"
-  resource_group: "$RESOURCE_GROUP"
   storage_account_name: "$AZURE_STORAGE_ACCOUNT"
   storage_container_name: "$AZURE_STORAGE_CONTAINER"
   client_id: "$CLIENT_ID"
   project_name: "$PROJECT_NAME"
+
+# Nombres de RG por rol (Cuando tienes multiples rg) ---
+rg_roles:
+  api:     "RG-Api-$PROJECT_NAME-$ENVIRONMENT"
+  apps:    "RG-Apps-$PROJECT_NAME-$ENVIRONMENT"
+  data:    "RG-Data-$PROJECT_NAME-$ENVIRONMENT"
+  network: "RG-Network-$PROJECT_NAME-$ENVIRONMENT"
+  secmon:  "RG-Security-Monitoring-$PROJECT_NAME-$ENVIRONMENT"
 
 # Configuración de red
 network:
@@ -29,9 +36,3 @@ network:
   subnet4_address_prefix: $NETWORK_SUBNET_ADDRESS_PREFIX_4
 
 
-# Etiquetas (tags)
-tags:
-  Environment: "$ENVIRONMENT"
-  Owner: "$PR_OWNER"
-  Tipo_Recurso: "$MODULE_NAME"
-  Proyecto: "$PROJECT_NAME"
