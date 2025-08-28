@@ -20,7 +20,7 @@ inputs = {
   tenant_id            = local.common_vars.azure.tenant_id
   resource_group_name   = local.common_vars.rg_roles.apps
   location             = local.common_vars.azure.region
-  acr_name             = "${local.common_vars.project_name}-acr-${local.common_vars.environment}"
+  acr_name             = "${local.common_vars.project_name}acr${local.common_vars.environment}"
   sku                  = "Standard"
   admin_enabled       = true
   
