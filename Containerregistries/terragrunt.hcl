@@ -3,9 +3,6 @@ include {
   path = find_in_parent_folders("terragrunt_azure.hcl")
 }
 
-dependency "resource_group" {
-  config_path = "../resource_groups"
-}
 
 # 🔗 Dependencia: resource_groups (debe haberse desplegado antes)
 dependency "resource_groups" {
