@@ -17,6 +17,6 @@ inputs = {
   tags = {
     environment = local.common_vars.environment
     Owner       = "juan.uni@doublevpartners.com"
-    Project     = "Precredit"
+    Project     = local.common_vars.project_name
   }
 }
