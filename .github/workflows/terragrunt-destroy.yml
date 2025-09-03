@@ -182,25 +182,25 @@ jobs:
           set -euo pipefail
 
           echo "🚀 terragrunt init"
-          terragrunt init
+          terragrunt --terragrunt-non-interactive init
 
           echo "📊 terragrunt plan previo a destroy"
-          terragrunt plan -input=false --terragrunt-non-interactive > destroy_plan.log 2>&1 || true
+          terragrunt --terragrunt-non-interactive plan -input=false > destroy_plan.log 2>&1 || true
 
 
           if grep -qi "Error acquiring the state lock" destroy_plan.log; then
             LOCK_ID=$(grep -oE "[a-f0-9\-]{36}" destroy_plan.log | head -n 1)
             if [ -n "$LOCK_ID" ]; then
               echo "🔓 Ejecutando force-unlock con ID: $LOCK_ID"
-              terragrunt force-unlock -force "$LOCK_ID"
+              terragrunt --terragrunt-non-interactive force-unlock -force "$LOCK_ID"
             fi
           fi
 
               echo "🔥 Ejecutando terragrunt destroy..."
               # 👇 Desactiva -e SOLO aquí para no perder el log si falla
               set +e
-              terragrunt destroy -input=false --terragrunt-non-interactive \
-                --terragrunt-ignore-external-dependencies -auto-approve | tee destroy_output.log
+              terragrunt --terragrunt-non-interactive --terragrunt-ignore-external-dependencies \
+                destroy -input=false -auto-approve | tee destroy_output.log
               DESTROY_EXIT_CODE=${PIPESTATUS[0]}
               set -e
               # Mensaje claro si el fallo fue por flags
