@@ -130,7 +130,7 @@ jobs:
         working-directory: ${{ github.event.inputs.module }}
         run: |
           INSTALL_TOKEN="${{ steps.app_token.outputs.token }}"
-          sed -i -E "s|source *=.*|source = \"git::https://x-access-token:${INSTALL_TOKEN}@github.com/ocrcsa/it_landing-zone-IaC.git//${{ github.event.inputs.module }}?ref=${{ github.event.inputs.version }}\"|" terragrunt.hcl
+          sed -i -E "s|source *=.*|source = \"git::https://x-access-token:${INSTALL_TOKEN}@github.com/juancamilouni/Azure.Modules.infrastructure//${MODULO}?ref=${VERSION}\"|" terragrunt.hcl
 
       - name: Verificar y limpiar bloque generate si provider ya existe
         working-directory: ${{ github.event.inputs.module }}
