@@ -159,11 +159,22 @@ jobs:
           echo "token=$INSTALL_TOKEN" >> $GITHUB_OUTPUT
 
       - name: Sobrescribir source con token, módulo y versión
-        working-directory: ${{ github.event.inputs.module }}
+        working-directory: ${{ github.event.client_payload.module }}
         run: |
+          echo "🔧 Reescribiendo 'source' en terragrunt.hcl"
+          MODULO="${{ github.event.client_payload.module }}"
+          VERSION="${{ github.event.client_payload.version }}"
           INSTALL_TOKEN="${{ steps.app_token.outputs.token }}"
-          sed -i -E "s|source *=.*|source = \"git::https://x-access-token:${INSTALL_TOKEN}@github.com/juancamilouni/Azure.Modules.infrastructure//${MODULO}?ref=${VERSION}\"|" terragrunt.hcl
+          echo "module: $MODULO"
+          echo "version: $VERSION"
 
+          if [ -z "$INSTALL_TOKEN" ]; then
+            echo "❌ El token de instalación está vacío. Abortando."
+            exit 1
+          fi
+
+          sed -i -E "s|source *=.*|source = \"git::https://x-access-token:${INSTALL_TOKEN}@github.com/juancamilouni/Azure.Modules.infrastructure//${MODULO}?ref=${VERSION}\"|" terragrunt.hcl
+          
       - name: Verificar y limpiar bloque generate si provider ya existe
         working-directory: ${{ github.event.inputs.module }}
         run: |
