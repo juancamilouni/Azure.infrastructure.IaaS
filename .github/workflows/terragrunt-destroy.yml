@@ -181,33 +181,39 @@ jobs:
         run: |
           set -euo pipefail
 
+          # ✅ Modo no interactivo vía ENV (compatible con todas las versiones)
+          export TERRAGRUNT_NON_INTERACTIVE=true
+          export TF_INPUT=0
+          export TF_IN_AUTOMATION=1
+
           echo "🚀 terragrunt init"
-          terragrunt --terragrunt-non-interactive init
+          terragrunt init
 
           echo "📊 terragrunt plan previo a destroy"
-          terragrunt --terragrunt-non-interactive plan -input=false > destroy_plan.log 2>&1 || true
-
+          terragrunt plan -input=false > destroy_plan.log 2>&1 || true
 
           if grep -qi "Error acquiring the state lock" destroy_plan.log; then
             LOCK_ID=$(grep -oE "[a-f0-9\-]{36}" destroy_plan.log | head -n 1)
             if [ -n "$LOCK_ID" ]; then
               echo "🔓 Ejecutando force-unlock con ID: $LOCK_ID"
-              terragrunt --terragrunt-non-interactive force-unlock -force "$LOCK_ID"
+              terragrunt force-unlock -force "$LOCK_ID"
             fi
           fi
 
               echo "🔥 Ejecutando terragrunt destroy..."
               # 👇 Desactiva -e SOLO aquí para no perder el log si falla
               set +e
-              terragrunt --terragrunt-non-interactive --terragrunt-ignore-external-dependencies \
+              terragrunt --terragrunt-ignore-external-dependencies \
                 destroy -input=false -auto-approve | tee destroy_output.log
               DESTROY_EXIT_CODE=${PIPESTATUS[0]}
-              set -e
-              # Mensaje claro si el fallo fue por flags
-              if grep -qi "flag provided but not" destroy_output.log; then
-                echo "❌ Opción inválida detectada. Usa --terragrunt-non-interactive y -input=false."
-                exit 2
+
+              # (fallback) si tu terragrunt no soporta --terragrunt-ignore-external-dependencies
+              if grep -qi "flag provided but not defined: --terragrunt-ignore-external-dependencies" destroy_output.log; then
+                echo "ℹ️ Reintentando sin --terragrunt-ignore-external-dependencies"
+                terragrunt destroy -input=false -auto-approve | tee destroy_output.log
+                DESTROY_EXIT_CODE=${PIPESTATUS[0]}
               fi
+              set -e
 
               if [ $DESTROY_EXIT_CODE -ne 0 ]; then
                 echo "❌ El destroy falló. Revisa el log arriba (destroy_output.log)."
