@@ -59,21 +59,21 @@ jobs:
             exit 1
           fi
 
-      - name: Regenerar common_vars.yaml
+
+      - name: Generar archivo common_vars.yaml
         run: |
-          echo "🔁 Regenerando archivo common_vars.yaml..."
           export DATA_SUBSCRIPTION_ID="${{ secrets.DATA_SUBSCRIPTION_ID }}"
           export TENANT_ID="${{ secrets.TENANT_ID }}"
-          export AZURE_STORAGE_ACCOUNT="${{ secrets.AZURE_STORAGE_ACCOUNT }}"
-          export AZURE_STORAGE_CONTAINER="${{ secrets.AZURE_STORAGE_CONTAINER }}"
+          export AZURE_STORAGE_ACCOUNT="${{ vars.AZURE_STORAGE_ACCOUNT }}"
+          export AZURE_STORAGE_CONTAINER="${{ vars.AZURE_STORAGE_CONTAINER }}"
           export CLIENT_ID="${{ secrets.CLIENT_ID }}"
-          export SQL_ADMIN_PASSWORD="${{ secrets.SQL_ADMIN_PASSWORD}}"
-          export AAD_OBJECT_ID="${{ vars.AAD_OBJECT_ID }}"
-          export AAD_LOGIN_NAME="${{ vars.AAD_LOGIN_NAME }}"
-          export AZURE_GLOBAL_REGION="${{ vars.AZURE_GLOBAL_REGION }}"
           export AZURE_REGION="${{ vars.AZURE_REGION }}"
-          export COUNTRY="${{ vars.COUNTRY }}"
           export ENVIRONMENT="${{ vars.ENVIRONMENT }}"
+          export COUNTRY="${{ vars.COUNTRY }}"
+          export PROJECT_NAME="${{ vars.PROJECT_NAME }}"
+          export RESOURCE_GROUP="${{ vars.RESOURCE_GROUP }}"
+
+
           export NETWORK_ADDRESS_SPACE="${{ vars.NETWORK_ADDRESS_SPACE }}"
           export NETWORK_SUBNET_NAME_1="${{ vars.NETWORK_SUBNET_NAME_1 }}"
           export NETWORK_SUBNET_NAME_2="${{ vars.NETWORK_SUBNET_NAME_2 }}"
@@ -83,9 +83,12 @@ jobs:
           export NETWORK_SUBNET_ADDRESS_PREFIX_2="${{ vars.NETWORK_SUBNET_ADDRESS_PREFIX_2}}"
           export NETWORK_SUBNET_ADDRESS_PREFIX_3="${{ vars.NETWORK_SUBNET_ADDRESS_PREFIX_3}}"
           export NETWORK_SUBNET_ADDRESS_PREFIX_4="${{ vars.NETWORK_SUBNET_ADDRESS_PREFIX_4}}"
-          export PROJECT_NAME="${{ vars.PROJECT_NAME }}"
-          export PR_OWNER="${{ vars.PR_OWNER }}"
-          export RESOURCE_GROUP="${{ vars.RESOURCE_GROUP }}"
+          export PUBLIC_NETWORK_ACCESS_ENABLED="${{ vars.PUBLIC_NETWORK_ACCESS_ENABLED }}"
+
+
+          export SQL_ADMIN_PASSWORD="${{ secrets.SQL_ADMIN_PASSWORD}}"
+          export AAD_OBJECT_ID="${{ vars.AAD_OBJECT_ID }}"
+          export AAD_LOGIN_NAME="${{ vars.AAD_LOGIN_NAME }}"
           export SQL_ADMIN_USERNAME="${{ vars.SQL_ADMIN_USERNAME }}"
           export SQL_DATABASE_COLLATION="${{ vars.SQL_DATABASE_COLLATION }}"
           export SQL_DATABASE_MAX_SIZE_GB="${{ vars.SQL_DATABASE_MAX_SIZE_GB }}"
@@ -99,6 +102,35 @@ jobs:
           export SQL_FIREWALL_RULE_GENERAL_RCSA="${{ vars.SQL_FIREWALL_RULE_GENERAL_RCSA }}"
           export SQL_FIREWALL_RULE_GENERAL_RCSA_EXTRA="${{ vars.SQL_FIREWALL_RULE_GENERAL_RCSA_EXTRA }}"
           export SQL_FIREWALL_RULE_PARTICULAR_RCSA_1="${{ vars.SQL_FIREWALL_RULE_PARTICULAR_RCSA_1 }}"
+
+
+          export STORAGE_ACCOUNT_AUDITORIA_NAME="${{ vars.STORAGE_ACCOUNT_AUDITORIA_NAME }}"
+          export STORAGE_CONTAINER_AUDITORIA_NAME="${{ vars.STORAGE_CONTAINER_AUDITORIA_NAME }}"
+
+
+          export GATEWAY_SUBNET_PREFIX="${{ vars.GATEWAY_SUBNET_PREFIX }}"
+          export VPN_CLIENT_ADDRESS_SPACE="${{ vars.VPN_CLIENT_ADDRESS_SPACE }}"
+          export GATEWAY_SKU="${{ vars.GATEWAY_SKU }}"
+          export PUBLIC_IP_NAME="${{ vars.PUBLIC_IP_NAME }}"
+          export GATEWAY_NAME="${{ vars.GATEWAY_NAME }}"
+          export IP_CONFIGURATION_NAME="${{ vars.IP_CONFIGURATION_NAME }}"
+          export NAME_SUBNET_GATEWAY="${{ vars.NAME_SUBNET_GATEWAY }}"
+          export PRIVATE_ENDPOINT_NAME="${{ vars.PRIVATE_ENDPOINT_NAME }}"
+
+
+          export BUDGET_SCOPE="${{ vars.BUDGET_SCOPE }}"
+          export BUDGET_SCOPE_GRUP="${{ vars.BUDGET_SCOPE_GRUP }}"
+          export BUDGET_NAME="${{ vars.BUDGET_NAME }}"
+          export BUDGET_NAME_GRUP="${{ vars.BUDGET_NAME_GRUP }}"
+          export BUDGET_AMOUNT="${{ vars.BUDGET_AMOUNT }}"
+          export BUDGET_AMOUNT_GRUP="${{ vars.BUDGET_AMOUNT_GRUP }}"
+          export BUDGET_TIME_GRAIN="${{ vars.BUDGET_TIME_GRAIN }}"
+          export BUDGET_START_DATE="${{ vars.BUDGET_START_DATE }}"
+          export BUDGET_END_DATE="${{ vars.BUDGET_END_DATE }}"
+          export BUDGET_EMAILS_80="${{ vars.BUDGET_EMAILS_80 }}"
+          export BUDGET_EMAILS_90="${{ vars.BUDGET_EMAILS_90 }}"
+
+
           envsubst < common_vars.template.yaml > common_vars.yaml
 
 
