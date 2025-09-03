@@ -181,8 +181,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          # ✅ Modo no interactivo vía ENV (compatible con todas las versiones)
+          # ✅ Modo no interactivo y sin dependencias externas vía ENV (compatible con todas las versiones)
           export TERRAGRUNT_NON_INTERACTIVE=true
+          export TERRAGRUNT_IGNORE_EXTERNAL_DEPENDENCIES=true
           export TF_INPUT=0
           export TF_IN_AUTOMATION=1
 
@@ -191,6 +192,7 @@ jobs:
 
           echo "📊 terragrunt plan previo a destroy"
           terragrunt plan -input=false > destroy_plan.log 2>&1 || true
+
 
           if grep -qi "Error acquiring the state lock" destroy_plan.log; then
             LOCK_ID=$(grep -oE "[a-f0-9\-]{36}" destroy_plan.log | head -n 1)
@@ -203,17 +205,14 @@ jobs:
               echo "🔥 Ejecutando terragrunt destroy..."
               # 👇 Desactiva -e SOLO aquí para no perder el log si falla
               set +e
-              terragrunt --terragrunt-ignore-external-dependencies \
-                destroy -input=false -auto-approve | tee destroy_output.log
+              terragrunt destroy -input=false -auto-approve | tee destroy_output.log
               DESTROY_EXIT_CODE=${PIPESTATUS[0]}
-
-              # (fallback) si tu terragrunt no soporta --terragrunt-ignore-external-dependencies
-              if grep -qi "flag provided but not defined: --terragrunt-ignore-external-dependencies" destroy_output.log; then
-                echo "ℹ️ Reintentando sin --terragrunt-ignore-external-dependencies"
-                terragrunt destroy -input=false -auto-approve | tee destroy_output.log
-                DESTROY_EXIT_CODE=${PIPESTATUS[0]}
-              fi
               set -e
+              # Mensaje claro si el fallo fue por flags
+              if grep -qi "flag provided but not" destroy_output.log; then
+                echo "❌ Opción inválida detectada. Evitamos flags y usamos variables de entorno para no interactividad/dep. externas."
+                exit 2
+              fi
 
               if [ $DESTROY_EXIT_CODE -ne 0 ]; then
                 echo "❌ El destroy falló. Revisa el log arriba (destroy_output.log)."
