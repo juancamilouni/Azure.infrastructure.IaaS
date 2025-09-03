@@ -14,29 +14,20 @@ terraform {
 }
 
 inputs = {
-  # Provider desde common_vars
-  subscription_id      = local.common_vars.azure.subscription_id
-  tenant_id            = local.common_vars.azure.tenant_id
+  subscription_id     = local.common_vars.azure.subscription_id
+  tenant_id           = local.common_vars.azure.tenant_id
+  name                = "${local.common_vars.project_name}-swa-${local.common_vars.environment}"
+  resource_group_name = local.common_vars.rg_roles.apps
+  location            = local.common_vars.azure.region
 
-  # Recurso
-  resource_group_name  = local.common_vars.rg_roles.apps
-  location             = local.common_vars.azure.region
-  name                 = "${local.common_vars.project_name}-swa-${local.common_vars.environment}"
+  sku_tier           = "Standard"
+  sku_size           = "Standard"
+  identity_enabled   = false
+  custom_domain      = null  # déjalo null hasta que tengas el DNS listo
 
-  # SKU Standard
-  sku_tier             = "Standard"
-  sku_size             = "Standard"
-
-  # Identidad administrada
-  identity_enabled     = true
-
-  # (Opcional) dominio cuando lo tengas
-  # custom_domain      = "app.midominio.com"
-
-  # Tags (mantén Environment y Owner como obligatorios)
   tags = {
     Tipo_Recurso = "StaticWebApp"
-    Environment  = local.common_vars.environment
+    environment  = local.common_vars.environment
     Owner        = "juan.uni@doublevpartners.com"
     Project      = local.common_vars.project_name
   }
