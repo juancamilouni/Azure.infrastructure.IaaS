@@ -24,6 +24,7 @@ inputs = {
   sku_size           = "Standard"
   identity_enabled   = false
   custom_domain      = null  # déjalo null hasta que tengas el DNS listo
+  custom_domain_validation_type = "cname-delegation"
 
   tags = {
     Tipo_Recurso = "StaticWebApp"
