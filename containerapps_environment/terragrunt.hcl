@@ -30,7 +30,7 @@ inputs = {
 
   # Red (privado). Si no quieres privado, pasa null.
   infrastructure_subnet_id = try(
-    dependency.networking.outputs.subnet_ids[local.common_vars.network.subnet2_name],
+    dependency.networking.outputs.subnet_ids[local.common_vars.network.subnet3_name],
     null
   )
 
