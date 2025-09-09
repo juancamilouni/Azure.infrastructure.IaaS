@@ -5,7 +5,13 @@ include {
 
 # 📥 Variables globales
 locals {
+  # Si prefieres más robusto, usa find_in_parent_folders("common_vars.yaml")
   common_vars = yamldecode(file("../common_vars.yaml"))
+}
+
+# 🔗 Dependencia: networking (para resolver subnet_ids)
+dependency "networking" {
+  config_path = "../networking"
 }
 
 # 📦 Repositorio del módulo Terraform
@@ -15,29 +21,28 @@ terraform {
 
 # Entradas del módulo
 inputs = {
-  # ---- Provider
   subscription_id = local.common_vars.azure.subscription_id
   tenant_id       = local.common_vars.azure.tenant_id
 
-  # ---- Recurso
   name                = "${local.common_vars.project_name}-aca-env-${local.common_vars.environment}"
-  resource_group_name = local.common_vars.resource_groups.apps
+  resource_group_name = local.common_vars.rg_roles.apps
   location            = local.common_vars.azure.region
 
-  # ---- Observabilidad
-  log_analytics_workspace_id = local.common_vars.monitor.log_analytics_id
+  # Red (privado). Si no quieres privado, pasa null.
+  infrastructure_subnet_id = try(
+    dependency.networking.outputs.subnet_ids[local.common_vars.network.subnet2_name],
+    null
+  )
 
-  # ---- Red (privado vs público)
-  infrastructure_subnet_id       = try(local.common_vars.network.subnets.containerapps, null)
   internal_load_balancer_enabled = false
 
-  # ---- Alta disponibilidad
+  # Alta disponibilidad
   zone_redundancy_enabled = false
 
   tags = {
-    Tipo_Recurso  = "ACR"
-    environment = local.common_vars.environment
-    Owner       = "juan.uni@doublevpartners.com"
-    Project     = local.common_vars.project_name
+    Tipo_Recurso = "ACA-ENV"
+    environment  = local.common_vars.environment
+    Owner        = "juan.uni@doublevpartners.com"
+    Project      = local.common_vars.project_name
   }
 }

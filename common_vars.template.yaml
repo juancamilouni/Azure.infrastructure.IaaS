@@ -35,4 +35,3 @@ network:
   subnet4_name: $NETWORK_SUBNET_NAME_4
   subnet4_address_prefix: $NETWORK_SUBNET_ADDRESS_PREFIX_4
 
-
