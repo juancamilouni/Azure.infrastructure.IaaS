@@ -3,7 +3,6 @@ include {
   path = find_in_parent_folders("terragrunt_azure.hcl")
 }
 
-
 # 📥 Variables globales
 locals {
   common_vars = yamldecode(file("../common_vars.yaml"))
@@ -16,25 +15,29 @@ terraform {
 
 # Entradas del módulo
 inputs = {
-  subscription_id = local.common.azure.subscription_id
-  tenant_id       = local.common.azure.tenant_id
-  name                = "${local.common.project_name}-aca-env-${local.common.environment}"
-  resource_group_name = local.common.resource_groups.apps
-  location            = local.common.azure.region
+  # ---- Provider
+  subscription_id = local.common_vars.azure.subscription_id
+  tenant_id       = local.common_vars.azure.tenant_id
 
-  log_analytics_workspace_id = local.common.monitor.log_analytics_id
+  # ---- Recurso
+  name                = "${local.common_vars.project_name}-aca-env-${local.common_vars.environment}"
+  resource_group_name = local.common_vars.resource_groups.apps
+  location            = local.common_vars.azure.region
 
-  # Si quieres environment PRIVADO, pasa la subnet; si PÚBLICO, deja null.
-  infrastructure_subnet_id       = try(local.common.network.subnets.containerapps, null)
+  # ---- Observabilidad
+  log_analytics_workspace_id = local.common_vars.monitor.log_analytics_id
+
+  # ---- Red (privado vs público)
+  infrastructure_subnet_id       = try(local.common_vars.network.subnets.containerapps, null)
   internal_load_balancer_enabled = false
 
   # ---- Alta disponibilidad
   zone_redundancy_enabled = false
 
   tags = {
-    Tipo_Recurso = "ACA-ENV"
-    environment  = local.common.environment
-    Owner        = local.common.owner
-    Project      = local.common.project_name
+    Tipo_Recurso  = "ACR"
+    environment = local.common_vars.environment
+    Owner       = "juan.uni@doublevpartners.com"
+    Project     = local.common_vars.project_name
   }
 }
