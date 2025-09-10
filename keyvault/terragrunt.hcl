@@ -38,17 +38,15 @@ inputs = {
   # Público por ahora (sin PE, no rompe egress de tus contenedores)
   public_network_access_enabled = true
 
-  # 🔒 ACLs (firewall KV): Deny por defecto, permitir solo lo que necesitas
+
+    # Firewall: Deny por defecto, permitir AzureServices, tus IPs y TODAS las subnets de la VNet
   network_acls_default_action  = "Deny"
   network_acls_bypass          = "AzureServices"
+  network_acls_ip_rules        = try(local.common_vars.security.allowed_ips, [])
 
-  # (Opcional) IPs de CI/oficina desde el YAML
-  network_acls_ip_rules = try(local.common_vars.security.allowed_ips, [])
+  # TODAS las subnets exportadas por tu módulo de red
+  network_acls_vnet_subnet_ids = values(dependency.networking.outputs.subnet_ids)
 
-  # Permitir la subnet donde vive ACA (p.ej. subnet3_name)
-  network_acls_vnet_subnet_ids = [
-    dependency.networking.outputs.subnet_ids[local.common_vars.network.subnet3_name]
-  ]
 
   tags = {
     Environment = local.common_vars.environment
