@@ -9,6 +9,10 @@ locals {
   common_vars = yamldecode(file("../common_vars.yaml"))
 }
 
+# 🔗 Dependencia: networking (para resolver subnet_ids)
+dependency "networking" {
+  config_path = "../networking"
+}
 
 # 📦 Repositorio del módulo Terraform
 terraform {
@@ -23,7 +27,7 @@ inputs = {
   # Recurso
   name                = "kv-${local.common_vars.project_name}-${local.common_vars.environment}"
   location            = local.common_vars.azure.region
-  resource_group_name = local.common_vars.rg_roles.secmon
+  resource_group_name = local.common_vars.rg_roles.apps
 
   # Seguridad y operación
   sku_name                   = "standard"
