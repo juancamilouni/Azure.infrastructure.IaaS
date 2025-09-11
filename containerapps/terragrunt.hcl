@@ -1,60 +1,55 @@
-# 🔗 Incluye el archivo base que configura el backend y el provider
+# 🔗 Backend & provider centralizados
 include {
   path = find_in_parent_folders("terragrunt_azure.hcl")
 }
 
 # 📥 Variables globales
 locals {
-  common_vars = yamldecode(file("../common_vars.yaml"))
+  common_vars = yamldecode(file(find_in_parent_folders("common_vars.yaml")))
 }
 
 # 🔗 Dependencia: ACA Environment (para obtener aca_environment_id)
 dependency "aca_environment" {
   config_path = "../containerapps_environment"
 
-  # Permite validar/planear sin tener aplicado el env todavía
+  # Permitir validar/planear sin haber aplicado el env aún
   mock_outputs = {
     aca_environment_id = "dummy-env-id"
   }
   mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
 
-# 📦 Repositorio del módulo Terraform
+# 📦 Repositorio del módulo Terraform (container_app)
 terraform {
-  source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git/<modulo>?ref=main"
+  source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git//modules/container_app?ref=main"
 }
 
-# Entradas del módulo (SIN secretos por ahora)
+# Entradas del módulo (sin secretos por ahora)
 inputs = {
   # ---- Contexto provider ----
   subscription_id = local.common_vars.azure.subscription_id
   tenant_id       = local.common_vars.azure.tenant_id
 
   # ---- Identificación ----
-  name                = "${local.common_vars.project_name}-sonarqube-${local.common_vars.environment}"
-  resource_group_name = local.common_vars.rg_roles.apps
-  environment_id      = dependency.aca_environment.outputs.aca_environment_id
+  name                 = "${local.common_vars.project_name}-sonarqube-${local.common_vars.environment}"
+  resource_group_name  = local.common_vars.rg_roles.apps
+  environment_id       = dependency.aca_environment.outputs.aca_environment_id
 
   # ---- Imagen (desde tu ACR) ----
   image = "precreditacrdesarrollo.azurecr.io/sonarqube:latest"
 
-  # ---- (Opcional) Workload profile (si tu ACA Env v2 lo usa) ----
-  workload_profile_name = try(local.common_vars.aca.workload_profile_name, null)
-
-  # ---- Identidad (MSI por defecto) ----
-  identity_type              = "SystemAssigned"
-  user_assigned_identity_ids = []
+  # ---- Recursos ----
+  container_cpu    = 1
+  container_memory = "2Gi"
 
   # ---- Ingress (interno; APIM/lo que definas al frente) ----
-  ingress_enabled            = true
-  ingress_external           = false
-  target_port                = 9000
-  ingress_transport          = "auto"
-  allow_insecure_connections = false
+  target_port       = 9000
+  ingress_external  = false
+  ingress_transport = "auto"
 
-  # ---- Recursos ----
-  cpu    = 1
-  memory = "2.0Gi"
+  # ---- Identidad (MSI por defecto) ----
+  system_identity            = true
+  user_assigned_identity_ids = []
 
   # ---- Variables de entorno ----
   env_vars = {
@@ -62,16 +57,19 @@ inputs = {
   }
 
   # ---- Secretos (AÚN NO configurados) ----
+  secrets = []
   secret_env_map = {}
-  secrets        = []
 
-  # ---- Registry ----
-  # Usaremos Managed Identity + rol AcrPull (se asigna después del apply)
-  registry = null
+  # ---- Registry (si usas MI + AcrPull, no pongas nada) ----
+  # registry_server          = null
+  # registry_username        = null
+  # registry_password_secret = null
+  # registry_password_value  = null
 
   # ---- Escalado ----
-  min_replicas = 1
-  max_replicas = 1
+  min_replicas     = 1
+  max_replicas     = 1
+  http_concurrency = 60
 
   # ---- Tags ----
   tags = {
@@ -79,7 +77,7 @@ inputs = {
     environment  = local.common_vars.environment
     Owner        = "juan.uni@doublevpartners.com"
     Project      = local.common_vars.project_name
-    managed_by   = "terragrunt"
     component    = "sonarqube"
+    managed_by   = "terragrunt"
   }
 }
