@@ -8,14 +8,13 @@ locals {
   common_vars = yamldecode(file("../common_vars.yaml"))
 }
 
-# 🔗 Dependencia: ACA Environment (para obtener environment_id)
+# 🔗 Dependencia: ACA Environment (para obtener aca_environment_id)
 dependency "aca_environment" {
-  # Ajusta a donde tengas el terragrunt del ACA Environment
   config_path = "../containerapps_environment"
 
   # Permite validar/planear sin tener aplicado el env todavía
   mock_outputs = {
-    environment_id = "dummy-env-id"
+    aca_environment_id = "dummy-env-id"
   }
   mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
@@ -34,21 +33,10 @@ inputs = {
   # ---- Identificación ----
   name                = "${local.common_vars.project_name}-sonarqube-${local.common_vars.environment}"
   resource_group_name = local.common_vars.rg_roles.apps
-
-  # ✅ Toma el primer output disponible entre varios nombres típicos
-  environment_id = try(
-    dependency.aca_environment.outputs.environment_id,
-    dependency.aca_environment.outputs.aca_environment_id,
-    dependency.aca_environment.outputs.container_app_environment_id,
-    dependency.aca_environment.outputs.containerapps_environment_id,
-    dependency.aca_environment.outputs.container_app_env_id,
-    dependency.aca_environment.outputs.id
-  )
+  environment_id      = dependency.aca_environment.outputs.aca_environment_id
 
   # ---- Imagen (desde tu ACR) ----
-  image = "precreditacrdesarrollo.azurecrdesarrollo.azurecr.io/sonarqube:latest"
-  # Si el login server es 'precreditacrdesarrollo.azurecr.io', corrige a:
-  # image = "precreditacrdesarrollo.azurecr.io/sonarqube:latest"
+  image = "precreditacrdesarrollo.azurecr.io/sonarqube:latest"
 
   # ---- (Opcional) Workload profile (si tu ACA Env v2 lo usa) ----
   workload_profile_name = try(local.common_vars.aca.workload_profile_name, null)
@@ -64,7 +52,7 @@ inputs = {
   ingress_transport          = "auto"
   allow_insecure_connections = false
 
-  # ---- Recursos (ajusta si lo necesitas más potente) ----
+  # ---- Recursos ----
   cpu    = 1
   memory = "2.0Gi"
 
@@ -78,7 +66,8 @@ inputs = {
   secrets        = []
 
   # ---- Registry ----
-  registry = null  # Usaremos MSI + rol AcrPull (se asigna luego)
+  # Usaremos Managed Identity + rol AcrPull (se asigna después del apply)
+  registry = null
 
   # ---- Escalado ----
   min_replicas = 1
