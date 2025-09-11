@@ -21,7 +21,7 @@ dependency "aca_environment" {
 
 # 📦 Repositorio del módulo Terraform (container_app)
 terraform {
-  source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git//modules/container_app?ref=main"
+  source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git/<modulo>?ref=main"
 }
 
 # Entradas del módulo (sin secretos por ahora)
@@ -31,7 +31,7 @@ inputs = {
   tenant_id       = local.common_vars.azure.tenant_id
 
   # ---- Identificación ----
-  name                 = "${local.common_vars.project_name}-sonarqube-${local.common_vars.environment}"
+  name                 = "containersonarqubedev"
   resource_group_name  = local.common_vars.rg_roles.apps
   environment_id       = dependency.aca_environment.outputs.aca_environment_id
 
@@ -39,15 +39,15 @@ inputs = {
   image = "precreditacrdesarrollo.azurecr.io/sonarqube:latest"
 
   # ---- Recursos ----
-  container_cpu    = 1
-  container_memory = "2Gi"
+  container_cpu       = 1
+  container_memory    = "2Gi"
 
-  # ---- Ingress (interno; APIM/lo que definas al frente) ----
-  target_port       = 9000
-  ingress_external  = false
-  ingress_transport = "auto"
+  # ---- Ingress interno (APIM al frente) ----
+  target_port         = 9000
+  ingress_external    = false
+  ingress_transport   = "auto"
 
-  # ---- Identidad (MSI por defecto) ----
+  # ---- Identidad ----
   system_identity            = true
   user_assigned_identity_ids = []
 
@@ -56,20 +56,17 @@ inputs = {
     SONARQUBE_WEB_JAVAOPTS = "-Xms512m -Xmx512m"
   }
 
-  # ---- Secretos (AÚN NO configurados) ----
-  secrets = []
+  # ---- Secretos (añádelos cuando los tengas en KV) ----
+  secrets        = []
   secret_env_map = {}
 
-  # ---- Registry (si usas MI + AcrPull, no pongas nada) ----
-  # registry_server          = null
-  # registry_username        = null
-  # registry_password_secret = null
-  # registry_password_value  = null
-
   # ---- Escalado ----
-  min_replicas     = 1
-  max_replicas     = 1
-  http_concurrency = 60
+  min_replicas      = 1
+  max_replicas      = 1
+  http_concurrency  = 60
+
+  # ---- Revisión (puedes poner 'single' y el módulo lo normaliza a 'Single')
+  revision_mode = "single"
 
   # ---- Tags ----
   tags = {
