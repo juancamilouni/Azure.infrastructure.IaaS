@@ -24,6 +24,7 @@ dependency "aca_environment" {
 terraform {
   source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git/<modulo>?ref=main"
 }
+
 # Entradas del módulo (SIN secretos por ahora)
 inputs = {
   # ---- Contexto provider ----
@@ -33,10 +34,21 @@ inputs = {
   # ---- Identificación ----
   name                = "${local.common_vars.project_name}-sonarqube-${local.common_vars.environment}"
   resource_group_name = local.common_vars.rg_roles.apps
-  environment_id      = dependency.aca_environment.outputs.environment_id
+
+  # ✅ Toma el primer output disponible entre varios nombres típicos
+  environment_id = try(
+    dependency.aca_environment.outputs.environment_id,
+    dependency.aca_environment.outputs.aca_environment_id,
+    dependency.aca_environment.outputs.container_app_environment_id,
+    dependency.aca_environment.outputs.containerapps_environment_id,
+    dependency.aca_environment.outputs.container_app_env_id,
+    dependency.aca_environment.outputs.id
+  )
 
   # ---- Imagen (desde tu ACR) ----
-  image = "precreditacrdesarrollo.azurecr.io/sonarqube:latest"
+  image = "precreditacrdesarrollo.azurecrdesarrollo.azurecr.io/sonarqube:latest"
+  # Si el login server es 'precreditacrdesarrollo.azurecr.io', corrige a:
+  # image = "precreditacrdesarrollo.azurecr.io/sonarqube:latest"
 
   # ---- (Opcional) Workload profile (si tu ACA Env v2 lo usa) ----
   workload_profile_name = try(local.common_vars.aca.workload_profile_name, null)
@@ -57,7 +69,6 @@ inputs = {
   memory = "2.0Gi"
 
   # ---- Variables de entorno (claras) ----
-  # SonarQube escucha en 9000; no requiere ASPNETCORE_URLS
   env_vars = {
     SONARQUBE_WEB_JAVAOPTS = "-Xms512m -Xmx512m"
   }
@@ -67,8 +78,7 @@ inputs = {
   secrets        = []
 
   # ---- Registry ----
-  # Usaremos Managed Identity + rol AcrPull (se asigna después)
-  registry = null
+  registry = null  # Usaremos MSI + rol AcrPull (se asigna luego)
 
   # ---- Escalado ----
   min_replicas = 1
