@@ -56,7 +56,7 @@ inputs = {
   cpu    = 1
   memory = "2.0Gi"
 
-  # ---- Variables de entorno (claras) ----
+  # ---- Variables de entorno ----
   env_vars = {
     SONARQUBE_WEB_JAVAOPTS = "-Xms512m -Xmx512m"
   }
