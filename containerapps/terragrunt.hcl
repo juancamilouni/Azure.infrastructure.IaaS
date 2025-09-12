@@ -55,7 +55,7 @@ inputs = {
 
   # ---- Ingress ----
   target_port       = 9000
-  ingress_external  = true
+  ingress_external  = false
   ingress_transport = "auto"
 
   # ---- Identidad (desactiva UAMI temporalmente) ----
