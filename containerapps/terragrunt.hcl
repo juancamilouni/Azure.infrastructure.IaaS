@@ -46,7 +46,7 @@ inputs = {
   resource_group_name = local.common_vars.rg_roles.apps
   environment_id      = dependency.aca_environment.outputs.aca_environment_id
 
-  # ---- Imagen en ACR ----
+  # ---- Imagen (desde tu ACR) ----
   image = "precreditacrdesarrollo.azurecr.io/sonarqube:latest"
 
   # ---- Recursos ----
@@ -58,18 +58,15 @@ inputs = {
   ingress_external  = false
   ingress_transport = "auto"
 
-  # ---- Identidad: SOLO la UAMI ----
+  # ---- Identidad (desactiva UAMI temporalmente) ----
   system_identity            = false
-  user_assigned_identity_ids = [dependency.identity.outputs.uami_resource_id]
+  user_assigned_identity_ids = []
 
-  # ---- Variables de entorno ----
-  env_vars = {
-    SONARQUBE_WEB_JAVAOPTS = "-Xms512m -Xmx512m"
-  }
-
-  # ---- Secretos ----
-  secrets        = []
-  secret_env_map = {}
+  # ---- Registro (usa admin username + password) ----
+  registry_server          = "precreditacrdesarrollo.azurecr.io"
+  registry_username        = "PrecreditacrDesarrollo"
+  registry_password_secret = "acr-password"
+  registry_password_value  = "fiyzRojtRBNDjYvi/x0XENT4cXAY7Q0IKssUkJXNnu+ACRD8Zuni"
 
   # ---- Escalado ----
   min_replicas     = 1
@@ -82,10 +79,11 @@ inputs = {
   # ---- Tags ----
   tags = {
     Tipo_Recurso = "ACA-APP"
-    Environment  = local.common_vars.environment
+    environment  = local.common_vars.environment
     Owner        = "juan.uni@doublevpartners.com"
     Project      = local.common_vars.project_name
-    Component    = "sonarqube"
-    Managed_By   = "terragrunt"
+    component    = "sonarqube"
+    managed_by   = "terragrunt"
   }
 }
+
