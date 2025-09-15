@@ -3,19 +3,24 @@ include {
   path = find_in_parent_folders("terragrunt_azure.hcl")
 }
 
+# 📥 Variables globales
 locals {
   common_vars = yamldecode(file(find_in_parent_folders("common_vars.yaml")))
 }
 
+# 📦 Repositorio del módulo Terraform
 terraform {
   source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git/<modulo>?ref=main"
 }
 
+# 🎯 Entradas del módulo
 inputs = {
+  # ---- Contexto Provider ----
   subscription_id = local.common_vars.azure.subscription_id
   tenant_id       = local.common_vars.azure.tenant_id
 
-  apim_name           = "apimprecreditdev"
+  # ---- Instancia APIM ----
+  apim_name           = "apim-${local.common_vars.project_name}-${local.common_vars.environment}"
   location            = local.common_vars.azure.region
   resource_group_name = local.common_vars.rg_roles.apps
   sku_name            = "Developer_1"
@@ -23,24 +28,28 @@ inputs = {
   publisher_name  = "${local.common_vars.project_name}-apim-${local.common_vars.environment}"
   publisher_email = local.common_vars.org.publisher_email
 
+  # ---- Dominio custom (opcional, en dev off) ----
   custom_domain_enabled    = false
   custom_domain            = ""
   kv_certificate_secret_id = ""
 
+  # ---- Product ----
   create_product                = true
   product_id                    = "plan-${local.common_vars.project_name}-${local.common_vars.environment}"
   product_display_name          = "Plan ${local.common_vars.project_name}-${local.common_vars.environment}"
   product_subscription_required = true
   product_approval_required     = false
 
+  # ---- Suscripción ----
   create_subscription       = true
-  subscription_display_name = "Precredit ${local.common_vars.environment} subscription"
-  subscription_user_id      = "1" # <- ahora sí válido (se normaliza a /.../users/1)
+  subscription_display_name = "${local.common_vars.project_name}-${local.common_vars.environment}-subscription"
+  subscription_user_id      = "1" # 🔑 Se normaliza a /.../users/1 automáticamente
 
+  # ---- Tags obligatorios ----
   tags = {
-    Environment = local.common_vars.environment
-    Owner       = "juan.uni@doublevpartners.com"
-    Project     = local.common_vars.project_name
-    Tipo_Recurso= "APIM"
+    Environment  = local.common_vars.environment
+    Owner        = "juan.uni@doublevpartners.com"
+    Project      = local.common_vars.project_name
+    Tipo_Recurso = "APIM"
   }
 }
