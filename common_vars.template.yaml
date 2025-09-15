@@ -35,3 +35,6 @@ network:
   subnet4_name: $NETWORK_SUBNET_NAME_4
   subnet4_address_prefix: $NETWORK_SUBNET_ADDRESS_PREFIX_4
 
+org:
+  #publisher_email: "$PUBLISHER_EMAIL"
+  publisher_email: "juan.uni@doublevpartners.com"
