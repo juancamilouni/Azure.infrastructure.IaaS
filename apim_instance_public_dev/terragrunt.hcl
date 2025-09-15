@@ -23,7 +23,7 @@ inputs = {
   apim_name            = "apimprecreditdev"
   location             = local.common_vars.azure.region
   resource_group_name  = local.common_vars.rg_roles.apps
-  sku_name             = "Developer"
+  sku_name             = "Developer_1"
   publisher_name       = "${local.common_vars.project_name}-apim-${local.common_vars.environment}"
   publisher_email      = local.common_vars.org.publisher_email
 
