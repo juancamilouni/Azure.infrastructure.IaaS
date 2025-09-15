@@ -19,18 +19,32 @@ inputs = {
   subscription_id = local.common_vars.azure.subscription_id
   tenant_id       = local.common_vars.azure.tenant_id
 
-  # Recurso
-  apim_name            = "apimprecreditdev"
-  location             = local.common_vars.azure.region
-  resource_group_name  = local.common_vars.rg_roles.apps
-  sku_name             = "Developer_1"
-  publisher_name       = "${local.common_vars.project_name}-apim-${local.common_vars.environment}"
-  publisher_email      = local.common_vars.org.publisher_email
+  # Recurso (APIM)
+  apim_name           = "apimprecreditdev"
+  location            = local.common_vars.azure.region
+  resource_group_name = local.common_vars.rg_roles.apps
+  sku_name            = "Developer_1"
+
+  publisher_name  = "${local.common_vars.project_name}-apim-${local.common_vars.environment}"
+  publisher_email = local.common_vars.org.publisher_email
 
   # Dominio custom (off en dev)
   custom_domain_enabled    = false
   custom_domain            = ""
   kv_certificate_secret_id = ""
+
+  # Product principal (requerido por tus APIs)
+  create_product                = true
+  product_id                    = "plan-${local.common_vars.project_name}-${local.common_vars.environment}"
+  product_display_name          = "Plan ${local.common_vars.project_name}-${local.common_vars.environment}"
+  product_subscription_required = true   # 🔐 exige subscription key (en DEV puedes poner false si quieres probar sin clave)
+  product_approval_required     = false
+
+  # Suscripción global (opcional pero recomendado)
+  create_subscription       = true
+  subscription_name         = "${local.common_vars.project_name}-${local.common_vars.environment}-subscription"
+  subscription_display_name = "Precredit ${local.common_vars.environment} subscription"
+  subscription_user_id      = "1"  # Administrators
 
   tags = {
     Environment = local.common_vars.environment
