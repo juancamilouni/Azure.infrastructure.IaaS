@@ -1,0 +1,50 @@
+# 🔗 Backend/provider común
+include {
+  path = find_in_parent_folders("terragrunt_azure.hcl")
+}
+
+# 📥 Variables globales
+locals {
+  common_vars = yamldecode(file(find_in_parent_folders("common_vars.yaml")))
+}
+
+# 🔗 Dependencia de la instancia APIM
+dependency "apim" {
+  config_path  = "../apim_instance_public_dev"
+  skip_outputs = false
+}
+
+# 📦 Repositorio del módulo Terraform
+terraform {
+  source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git/<modulo>?ref=main"
+}
+
+# 🎯 Entradas
+inputs = {
+  # Provider
+  subscription_id     = local.common_vars.azure.subscription_id
+  tenant_id           = local.common_vars.azure.tenant_id
+
+  # Contexto APIM
+  resource_group_name = local.common_vars.rg_roles.apps
+  apim_name           = dependency.apim.outputs.apim_name
+
+  # Backend (tu ACA público en DEV)
+  backend_name = "backend-${local.common_vars.project_name}"
+  backend_url  = "https://containersonarqubedev.mangosand-1896af9c.eastus2.azurecontainerapps.io"
+
+  # API
+  api_name         = "api-${local.common_vars.project_name}"
+  api_display_name = "${local.common_vars.project_name} API"
+  api_path         = "api/${local.common_vars.project_name}"
+
+  # Si no tienes OpenAPI, deja vacío:
+  openapi_spec_url          = ""
+  api_subscription_required = true
+
+  # Product
+  product_id                    = "plan-${local.common_vars.project_name}"
+  product_display_name          = "Plan ${local.common_vars.project_name}"
+  product_subscription_required = true
+  product_approval_required     = false
+}
