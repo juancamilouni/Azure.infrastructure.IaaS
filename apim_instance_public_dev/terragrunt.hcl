@@ -20,7 +20,7 @@ inputs = {
   tenant_id       = local.common_vars.azure.tenant_id
 
   # Recurso
-  apim_name            = "apim-${local.common_vars.project_name}-dev"
+  apim_name            = "apimprecreditdev"
   location             = local.common_vars.azure.region
   resource_group_name  = local.common_vars.rg_roles.apps
   sku_name             = "Developer"
