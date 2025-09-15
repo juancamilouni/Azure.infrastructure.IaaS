@@ -33,23 +33,22 @@ inputs = {
   custom_domain            = ""
   kv_certificate_secret_id = ""
 
-  # Product principal (requerido por tus APIs)
+  # Product principal (para agrupar tus APIs)
   create_product                = true
-  product_id                    = "plan-${local.common_vars.project_name}-${local.common_vars.environment}"
+  product_id                    = "plan-${local.common_vars.project_name}-${local.common_vars.environment}" # ej: plan-precredit-dev
   product_display_name          = "Plan ${local.common_vars.project_name}-${local.common_vars.environment}"
-  product_subscription_required = true   # 🔐 exige subscription key (en DEV puedes poner false si quieres probar sin clave)
+  product_subscription_required = true   # en DEV puedes poner false si quieres probar sin keys
   product_approval_required     = false
 
-  # Suscripción global (opcional pero recomendado)
+  # Suscripción global asociada al Product
   create_subscription       = true
-  subscription_name         = "${local.common_vars.project_name}-${local.common_vars.environment}-subscription"
   subscription_display_name = "Precredit ${local.common_vars.environment} subscription"
-  subscription_user_id      = "1"  # Administrators
+  subscription_user_id      = "1" # Administrators
 
   tags = {
-    Environment = local.common_vars.environment
-    Owner       = "juan.uni@doublevpartners.com"
-    Project     = local.common_vars.project_name
-    Tipo_Recurso= "APIM"
+    Environment  = local.common_vars.environment
+    Owner        = "juan.uni@doublevpartners.com"
+    Project      = local.common_vars.project_name
+    Tipo_Recurso = "APIM"
   }
 }
