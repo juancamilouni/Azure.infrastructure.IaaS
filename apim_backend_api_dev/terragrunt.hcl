@@ -34,12 +34,12 @@ inputs = {
   api_path        = "api/${local.common_vars.project_name}"
 
   openapi_spec_url          = ""
-  api_subscription_required = true
+  api_subscription_required = false
 
   create_product              = false
   product_id                  = "plan-${local.common_vars.project_name}-${local.common_vars.environment}"
   product_display_name        = "Plan ${local.common_vars.project_name}-${local.common_vars.environment}"
-  product_subscription_required = true
+  product_subscription_required = false
   product_approval_required     = false
 
   enable_wildcard_operations = true
