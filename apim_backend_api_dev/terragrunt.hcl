@@ -14,6 +14,7 @@ dependency "apim" {
   skip_outputs = false
 }
 
+# 📦 Repositorio del módulo Terraform
 terraform {
   source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git/<modulo>?ref=main"
 }
@@ -22,7 +23,7 @@ inputs = {
   subscription_id = local.common_vars.azure.subscription_id
   tenant_id       = local.common_vars.azure.tenant_id
 
-  resource_group_name = local.common_vars.rg_roles.apps
+  resource_group_name = local.common_vars.rg_roles.api
   apim_name           = dependency.apim.outputs.apim_name
 
   backend_name = "backend-${local.common_vars.project_name}"
