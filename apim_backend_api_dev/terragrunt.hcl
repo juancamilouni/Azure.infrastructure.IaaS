@@ -36,9 +36,9 @@ inputs = {
   # API
   api_name         = "api-${local.common_vars.project_name}-${local.common_vars.environment}"
   api_display_name = "${local.common_vars.project_name}-API-${local.common_vars.environment}"
-  api_path         = "api/${local.common_vars.project_name}"
+  api_path         = "api/${local.common_vars.project_name}"   # ej: api/precredit
 
-  # Si no tienes OpenAPI, deja vacío:
+  # OpenAPI (opcional)
   openapi_spec_url          = ""
   api_subscription_required = true
 
@@ -47,4 +47,9 @@ inputs = {
   product_display_name          = "Plan ${local.common_vars.project_name}-${local.common_vars.environment}"
   product_subscription_required = true
   product_approval_required     = false
+
+  # Wildcard + rewrite (para evitar 404 y quitar prefijo)
+  enable_wildcard_operations = true
+  wildcard_methods           = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+  enable_rewrite_uri         = true
 }
