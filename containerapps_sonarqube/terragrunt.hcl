@@ -18,11 +18,6 @@ dependency "aca_environment" {
   mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
 
-# 🔗 Dependencia: Identidad UAMI
-dependency "identity" {
-  config_path  = "../identity"
-  skip_outputs = false
-}
 
 # 🔗 Dependencia: Role Assignment (para asegurar AcrPull antes de desplegar)
 dependency "role_assignment" {
