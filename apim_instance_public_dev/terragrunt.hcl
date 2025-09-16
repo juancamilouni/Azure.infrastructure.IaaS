@@ -22,7 +22,7 @@ inputs = {
   # ---- Instancia APIM ----
   apim_name           = "apim-${local.common_vars.project_name}-${local.common_vars.environment}"
   location            = local.common_vars.azure.region
-  resource_group_name = local.common_vars.rg_roles.apps
+  resource_group_name = local.common_vars.rg_roles.api
   sku_name            = "Developer_1"
 
   publisher_name  = "${local.common_vars.project_name}-apim-${local.common_vars.environment}"
