@@ -20,7 +20,7 @@ inputs = {
   tenant_id       = local.common_vars.azure.tenant_id
 
   # ---- Instancia APIM ----
-  apim_name           = "apim-${local.common_vars.project_name}-${local.common_vars.environment}"
+  apim_name           = "${local.common_vars.project_name}-apim-${local.common_vars.environment}"
   location            = local.common_vars.azure.region
   resource_group_name = local.common_vars.rg_roles.api
   sku_name            = "Developer_1"
