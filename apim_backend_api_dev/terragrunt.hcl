@@ -14,42 +14,33 @@ dependency "apim" {
   skip_outputs = false
 }
 
-# 📦 Repositorio del módulo Terraform
 terraform {
   source = "git::https://github.com/juancamilouni/Azure.Modules.infrastructure.git/<modulo>?ref=main"
 }
 
-# 🎯 Entradas
 inputs = {
-  # Provider
   subscription_id = local.common_vars.azure.subscription_id
   tenant_id       = local.common_vars.azure.tenant_id
 
-  # Contexto APIM
   resource_group_name = local.common_vars.rg_roles.apps
   apim_name           = dependency.apim.outputs.apim_name
 
-  # Backend (tu ACA público en DEV)
   backend_name = "backend-${local.common_vars.project_name}"
-  backend_url  = "https://containersonarqubedev.mangosand-1896af9c.eastus2.azurecontainerapps.io"
+  backend_url  = "https://precredit-gateway-desarrollo.ambitioustree-c50c7bc2.eastus2.azurecontainerapps.io"
 
-  # API
-  api_name         = "api-${local.common_vars.project_name}-${local.common_vars.environment}"
+  api_name        = "api-${local.common_vars.project_name}-${local.common_vars.environment}"
   api_display_name = "${local.common_vars.project_name}-API-${local.common_vars.environment}"
-  api_path         = "api/${local.common_vars.project_name}"   # ej: api/precredit
+  api_path        = "api/${local.common_vars.project_name}"
 
-  # OpenAPI (opcional)
   openapi_spec_url          = ""
   api_subscription_required = true
 
-  # Product (USAR EXISTENTE en APIM)
-  create_product                = false
-  product_id                    = "plan-${local.common_vars.project_name}-${local.common_vars.environment}"
-  product_display_name          = "Plan ${local.common_vars.project_name}-${local.common_vars.environment}" # ignorado si create_product=false
-  product_subscription_required = true  # ignorado si create_product=false
-  product_approval_required     = false # ignorado si create_product=false
+  create_product              = false
+  product_id                  = "plan-${local.common_vars.project_name}-${local.common_vars.environment}"
+  product_display_name        = "Plan ${local.common_vars.project_name}-${local.common_vars.environment}"
+  product_subscription_required = true
+  product_approval_required     = false
 
-  # Wildcard + rewrite (para evitar 404 y quitar prefijo)
   enable_wildcard_operations = true
   wildcard_methods           = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
   enable_rewrite_uri         = true
