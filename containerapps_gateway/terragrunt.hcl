@@ -50,11 +50,11 @@ inputs = {
   image = "acrprecreditdesarrollo.azurecr.io/precredit-gateways:latest"
 
   # ---- Recursos ----
-  container_cpu    = 1
-  container_memory = "2Gi"
+  container_cpu    = 0.5
+  container_memory = "1Gi"
 
   # ---- Ingress ----
-  target_port       = 9000
+  target_port       = 5000
   ingress_external  = true
   ingress_transport = "auto"
 
@@ -70,7 +70,7 @@ inputs = {
 
   # ---- Escalado ----
   min_replicas     = 1
-  max_replicas     = 1
+  max_replicas     = 3
   http_concurrency = 60
 
   # ---- Revisión ----
