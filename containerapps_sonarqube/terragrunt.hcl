@@ -47,7 +47,7 @@ inputs = {
   environment_id      = dependency.aca_environment.outputs.aca_environment_id
 
   # ---- Imagen (desde tu ACR) ----
-  image = "precreditacrdesarrollo.azurecr.io/sonarqube:latest"
+  image = "acrprecreditdesarrollo.azurecr.io/sonarqube:latest"
 
   # ---- Recursos ----
   container_cpu    = 1
@@ -63,10 +63,10 @@ inputs = {
   user_assigned_identity_ids = []
 
   # ---- Registro (usa admin username + password) ----
-  registry_server          = "precreditacrdesarrollo.azurecr.io"
-  registry_username        = "PrecreditacrDesarrollo"
+  registry_server          = "acrprecreditdesarrollo.azurecr.io"
+  registry_username        = "acrprecreditdesarrollo"
   registry_password_secret = "acr-password"
-  registry_password_value  = "fiyzRojtRBNDjYvi/x0XENT4cXAY7Q0IKssUkJXNnu+ACRD8Zuni"
+  registry_password_value  = "z+vfBhzZHjM9Wafhak7cduUkbS9xezmh93Wb/l1U/o+ACRAZ0lig"
 
   # ---- Escalado ----
   min_replicas     = 1
