@@ -8,7 +8,7 @@ locals {
   common_vars = yamldecode(file(find_in_parent_folders("common_vars.yaml")))
 }
 
-# 🔗 Dependencia de la instancia APIM
+# 🔗 Dependencia de la instancia APIM (donde ya se creó Product/suscripción)
 dependency "apim" {
   config_path  = "../apim_instance_public_dev"
   skip_outputs = false
@@ -42,11 +42,12 @@ inputs = {
   openapi_spec_url          = ""
   api_subscription_required = true
 
-  # Product
+  # Product (USAR EXISTENTE en APIM)
+  create_product                = false
   product_id                    = "plan-${local.common_vars.project_name}-${local.common_vars.environment}"
-  product_display_name          = "Plan ${local.common_vars.project_name}-${local.common_vars.environment}"
-  product_subscription_required = true
-  product_approval_required     = false
+  product_display_name          = "Plan ${local.common_vars.project_name}-${local.common_vars.environment}" # ignorado si create_product=false
+  product_subscription_required = true  # ignorado si create_product=false
+  product_approval_required     = false # ignorado si create_product=false
 
   # Wildcard + rewrite (para evitar 404 y quitar prefijo)
   enable_wildcard_operations = true
