@@ -5,7 +5,23 @@ include {
 
 # 📥 Variables globales
 locals {
-  common_vars = yamldecode(file(find_in_parent_folders("common_vars.yaml")))
+  common_vars = yamldecode(file("../common_vars.yaml"))
+}
+
+# 🔗 Dependencias
+dependency "networking" {
+  config_path = "../networking"
+  skip_outputs = false
+}
+
+dependency "swa" {
+  config_path = "../static_web_app"
+  skip_outputs = false
+}
+
+dependency "apim" {
+  config_path = "../apim_backend_api_dev"
+  skip_outputs = false
 }
 
 # 📦 Repositorio del módulo Terraform
