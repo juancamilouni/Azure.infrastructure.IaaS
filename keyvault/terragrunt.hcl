@@ -23,7 +23,7 @@ inputs = {
   subscription_id     = local.common_vars.azure.subscription_id
   tenant_id           = local.common_vars.azure.tenant_id
 
-  name                = "kv-${local.common_vars.project_name}-${local.common_vars.environment}"
+  name                = "${local.common_vars.project_name}-kv-${local.common_vars.environment}"
   location            = local.common_vars.azure.region
   resource_group_name = local.common_vars.rg_roles.secmon
 
