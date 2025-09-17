@@ -31,7 +31,7 @@ inputs = {
 
   api_name        = "api-${local.common_vars.project_name}-${local.common_vars.environment}"
   api_display_name = "${local.common_vars.project_name}-API-${local.common_vars.environment}"
-  api_path        = "api/${local.common_vars.project_name}"
+  api_path        = "api"
 
   openapi_spec_url          = ""
   api_subscription_required = false
