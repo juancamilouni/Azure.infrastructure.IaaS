@@ -53,7 +53,7 @@ inputs = {
 
   # ---- Backends ----
   swa_fqdn  = dependency.swa.outputs.swa_default_host
-  apim_fqdn = dependency.apim.outputs.apim_gateway_url
+  apim_fqdn = "${dependency.apim.inputs.apim_name}.azure-api.net"
 
   # ---- Certificado ----
   ssl_cert = null
