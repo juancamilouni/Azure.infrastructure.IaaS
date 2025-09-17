@@ -40,11 +40,7 @@ inputs = {
   resource_group_name = local.common_vars.rg_roles.network
   location            = local.common_vars.azure.region
 
-  # ---- Red ----
-  subnet_id = try(
-    dependency.networking.outputs.subnet_ids[local.common_vars.network.subnet_appgw_name],
-    null
-  )
+  subnet_id = dependency.networking.outputs.subnet_ids[local.common_vars.network.subnet1_name]
   capacity = 2
 
   # ---- Dominios ----
