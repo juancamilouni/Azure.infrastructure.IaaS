@@ -50,7 +50,7 @@ inputs = {
   image = "acrprecreditqa.azurecr.io/precredit-gateways-qa:latest"
 
   # ---- Recursos ----
-  container_cpu    = 1
+  container_cpu    = 0.5
   container_memory = "1Gi"
 
   # ---- Ingress ----
