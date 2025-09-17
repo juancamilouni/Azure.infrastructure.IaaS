@@ -48,8 +48,8 @@ inputs = {
   capacity = 2
 
   # ---- Dominios ----
-  web_domain = "www.${local.common_vars.domain}"
-  api_domain = "api.${local.common_vars.domain}"
+  web_domain = "www.${local.common_vars.project_name}-${local.common_vars.environment}"
+  api_domain = "api.${local.common_vars.project_name}-${local.common_vars.environment}"
 
   # ---- Backends ----
   swa_fqdn  = dependency.swa.outputs.swa_default_host
