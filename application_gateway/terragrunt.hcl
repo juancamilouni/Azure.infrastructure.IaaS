@@ -41,7 +41,7 @@ inputs = {
   location            = local.common_vars.azure.region
 
   subnet_id = dependency.networking.outputs.subnet_ids[local.common_vars.network.subnet1_name]
-  capacity = 2
+  capacity = 1
 
   # ---- Dominios ----
   web_domain = "www.${local.common_vars.project_name}-${local.common_vars.environment}"
