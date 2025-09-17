@@ -47,7 +47,7 @@ inputs = {
   environment_id      = dependency.aca_environment.outputs.aca_environment_id
 
   # ---- Imagen (desde tu ACR) ----
-  image = "acrprecreditdesarrollo.azurecr.io/precredit-core:latest"
+  image = "acrprecreditqa.azurecr.io/precredit-core-qa:latest"
 
   # ---- Recursos ----
   container_cpu    = 0.5
@@ -63,10 +63,10 @@ inputs = {
   user_assigned_identity_ids = []
 
   # ---- Registro (usa admin username + password) ----
-  registry_server          = "acrprecreditdesarrollo.azurecr.io"
-  registry_username        = "acrprecreditdesarrollo"
+  registry_server          = "acrprecreditqa.azurecr.io"
+  registry_username        = "acrprecreditqa"
   registry_password_secret = "acr-password"
-  registry_password_value  = "z+vfBhzZHjM9Wafhak7cduUkbS9xezmh93Wb/l1U/o+ACRAZ0lig"
+  registry_password_value  = "HZBTnoYKFSlGHp8JC2SFzbPLL7vL3Dh9povu51zK1j+ACRBigM0W"
 
   # ---- Escalado ----
   min_replicas     = 1
@@ -82,7 +82,7 @@ inputs = {
     environment  = local.common_vars.environment
     Owner        = "juan.uni@doublevpartners.com"
     Project      = local.common_vars.project_name
-    component    = "sonarqube"
+    component    = "core"
     managed_by   = "terragrunt"
   }
 }
