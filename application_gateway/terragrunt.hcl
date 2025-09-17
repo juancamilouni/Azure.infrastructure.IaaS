@@ -1,4 +1,4 @@
-# 🔗 Incluye el backend/provider común
+# 🔗 Incluye el archivo base que configura el backend y el provider
 include {
   path = find_in_parent_folders("terragrunt_azure.hcl")
 }
@@ -21,29 +21,32 @@ inputs = {
 
   # ---- Identificación ----
   name                = "agw-${local.common_vars.project_name}-${local.common_vars.environment}"
-  location            = local.common_vars.azure.region
   resource_group_name = local.common_vars.rg_roles.network
+  location            = local.common_vars.azure.region
 
   # ---- Red ----
-  subnet_id = local.common_vars.subnets.appgw
-  capacity  = 2
+  subnet_id = try(
+    dependency.networking.outputs.subnet_ids[local.common_vars.network.subnet_appgw_name],
+    null
+  )
+  capacity = 2
 
   # ---- Dominios ----
   web_domain = "www.${local.common_vars.domain}"
   api_domain = "api.${local.common_vars.domain}"
 
   # ---- Backends ----
-  swa_fqdn  = local.common_vars.apps.static_webapp_fqdn
-  apim_fqdn = local.common_vars.apps.apim_fqdn
+  swa_fqdn  = dependency.swa.outputs.swa_default_host
+  apim_fqdn = dependency.apim.outputs.apim_gateway_url
 
   # ---- Certificado ----
   ssl_cert = null
 
   # ---- Tags obligatorios ----
   tags = {
+    Tipo_Recurso = "ApplicationGateway"
     Environment  = local.common_vars.environment
     Owner        = "juan.uni@doublevpartners.com"
     Project      = local.common_vars.project_name
-    Tipo_Recurso = "ApplicationGateway"
   }
 }
