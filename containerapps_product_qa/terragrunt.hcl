@@ -54,7 +54,7 @@ inputs = {
   container_memory = "1Gi"
 
   # ---- Ingress ----
-  target_port       = 8000
+  target_port       = 8080
   ingress_external  = true
   ingress_transport = "auto"
 
