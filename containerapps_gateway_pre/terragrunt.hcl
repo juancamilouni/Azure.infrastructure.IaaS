@@ -63,10 +63,10 @@ inputs = {
   user_assigned_identity_ids = []
 
   # ---- Registro (usa admin username + password) ----
-  registry_server          = "acrprecreditqa.azurecr.io"
-  registry_username        = "acrprecreditqa"
+  registry_server          = "acrprecreditpreprod.azurecr.io"
+  registry_username        = "acrprecreditpreprod"
   registry_password_secret = "acr-password"
-  registry_password_value  = "HZBTnoYKFSlGHp8JC2SFzbPLL7vL3Dh9povu51zK1j+ACRBigM0W"
+  registry_password_value  = "32SBggixt3DI3b/+R8PAwWjbVy6tqke43Ol0WyFNSJ+ACRAoBC6F"
 
   # ---- Escalado ----
   min_replicas     = 1
