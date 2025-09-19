@@ -82,7 +82,7 @@ inputs = {
     environment  = local.common_vars.environment
     Owner        = "juan.uni@doublevpartners.com"
     Project      = local.common_vars.project_name
-    component    = "core"
+    component    = "ACA-APP"
     managed_by   = "terragrunt"
   }
 }
