@@ -20,7 +20,7 @@ dependency "swa" {
 }
 
 dependency "apim" {
-  config_path = "../apim_backend_api_qa"
+  config_path = "../apim_backend_api_pre"
   skip_outputs = false
 }
 
