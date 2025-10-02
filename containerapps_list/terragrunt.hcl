@@ -42,12 +42,12 @@ inputs = {
   tenant_id       = local.common_vars.azure.tenant_id
 
   # ---- Identificación ----
-  name                = "precredit-core-${local.common_vars.environment}"
+  name                = "precredit-list-${local.common_vars.environment}"
   resource_group_name = local.common_vars.rg_roles.apps
   environment_id      = dependency.aca_environment.outputs.aca_environment_id
 
   # ---- Imagen (desde tu ACR) ----
-  image = "acrprecreditdesarrollo.azurecr.io/precredit-core:latest"
+  image = "acrprecreditdesarrollo.azurecr.io/precredit-list:latest"
 
   # ---- Recursos ----
   container_cpu    = 0.5
