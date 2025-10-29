@@ -51,7 +51,7 @@ inputs = {
 
   # ---- Recursos ----
   container_cpu    = 1
-  container_memory = "2Gi"
+  container_memory = "3Gi"
 
   # ---- Ingress ----
   target_port       = 9000
