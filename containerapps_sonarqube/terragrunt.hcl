@@ -50,7 +50,7 @@ inputs = {
   image = "acrprecreditdesarrollo.azurecr.io/sonarqube:latest"
 
   # ---- Recursos ----
-  container_cpu    = 1
+  container_cpu    = 1.5
   container_memory = "3Gi"
 
   # ---- Ingress ----
