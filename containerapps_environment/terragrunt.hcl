@@ -38,6 +38,17 @@ inputs = {
 
   # Alta disponibilidad
   zone_redundancy_enabled = false
+# 🛑 NUEVO: Workload Profile
+  workload_profiles = [
+    {
+      name      = "Dedicated-D4" # Ajuste según el perfil que utiliza
+      min_nodes = 2
+      max_nodes = 10
+    }
+  ]
+
+  # 🛑 NUEVO: Request Idle Timeout
+  request_idle_timeout_minutes = 8
 
   tags = {
     Tipo_Recurso = "ACA-ENV"
