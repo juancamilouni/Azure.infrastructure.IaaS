@@ -47,9 +47,6 @@ inputs = {
     }
   ]
 
-  # 🛑 NUEVO: Request Idle Timeout
-  request_idle_timeout_minutes = 8
-
   tags = {
     Tipo_Recurso = "ACA-ENV"
     environment  = local.common_vars.environment
