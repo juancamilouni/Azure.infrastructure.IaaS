@@ -48,6 +48,14 @@ jobs:
         with:
           terraform_version: 1.6.6
 
+#  solo se utiliza despues de la creacion de grupo de recursos 
+      # - name: 🔍 Validar secretos de entorno 
+      #   run: |
+      #     if [ -z "${{ secrets.AZURE_STORAGE_ACCOUNT }}" ] || [ -z "${{ secrets.AZURE_STORAGE_CONTAINER }}" ]; then
+      #       echo "❌ Secretos AZURE_STORAGE_ACCOUNT o AZURE_STORAGE_CONTAINER faltan."
+      #       exit 1
+      #     fi
+
       - name: Generar archivo common_vars.yaml
         run: |
           export DATA_SUBSCRIPTION_ID="${{ secrets.DATA_SUBSCRIPTION_ID }}"
@@ -60,6 +68,8 @@ jobs:
           export COUNTRY="${{ vars.COUNTRY }}"
           export PROJECT_NAME="${{ vars.PROJECT_NAME }}"
           export RESOURCE_GROUP="${{ vars.RESOURCE_GROUP }}"
+
+
           export NETWORK_ADDRESS_SPACE="${{ vars.NETWORK_ADDRESS_SPACE }}"
           export NETWORK_SUBNET_NAME_1="${{ vars.NETWORK_SUBNET_NAME_1 }}"
           export NETWORK_SUBNET_NAME_2="${{ vars.NETWORK_SUBNET_NAME_2 }}"
@@ -70,6 +80,8 @@ jobs:
           export NETWORK_SUBNET_ADDRESS_PREFIX_3="${{ vars.NETWORK_SUBNET_ADDRESS_PREFIX_3}}"
           export NETWORK_SUBNET_ADDRESS_PREFIX_4="${{ vars.NETWORK_SUBNET_ADDRESS_PREFIX_4}}"
           export PUBLIC_NETWORK_ACCESS_ENABLED="${{ vars.PUBLIC_NETWORK_ACCESS_ENABLED }}"
+
+
           export SQL_ADMIN_PASSWORD="${{ secrets.SQL_ADMIN_PASSWORD}}"
           export AAD_OBJECT_ID="${{ vars.AAD_OBJECT_ID }}"
           export AAD_LOGIN_NAME="${{ vars.AAD_LOGIN_NAME }}"
@@ -86,8 +98,12 @@ jobs:
           export SQL_FIREWALL_RULE_GENERAL_RCSA="${{ vars.SQL_FIREWALL_RULE_GENERAL_RCSA }}"
           export SQL_FIREWALL_RULE_GENERAL_RCSA_EXTRA="${{ vars.SQL_FIREWALL_RULE_GENERAL_RCSA_EXTRA }}"
           export SQL_FIREWALL_RULE_PARTICULAR_RCSA_1="${{ vars.SQL_FIREWALL_RULE_PARTICULAR_RCSA_1 }}"
+
+
           export STORAGE_ACCOUNT_AUDITORIA_NAME="${{ vars.STORAGE_ACCOUNT_AUDITORIA_NAME }}"
           export STORAGE_CONTAINER_AUDITORIA_NAME="${{ vars.STORAGE_CONTAINER_AUDITORIA_NAME }}"
+
+
           export GATEWAY_SUBNET_PREFIX="${{ vars.GATEWAY_SUBNET_PREFIX }}"
           export VPN_CLIENT_ADDRESS_SPACE="${{ vars.VPN_CLIENT_ADDRESS_SPACE }}"
           export GATEWAY_SKU="${{ vars.GATEWAY_SKU }}"
@@ -96,6 +112,8 @@ jobs:
           export IP_CONFIGURATION_NAME="${{ vars.IP_CONFIGURATION_NAME }}"
           export NAME_SUBNET_GATEWAY="${{ vars.NAME_SUBNET_GATEWAY }}"
           export PRIVATE_ENDPOINT_NAME="${{ vars.PRIVATE_ENDPOINT_NAME }}"
+
+
           export BUDGET_SCOPE="${{ vars.BUDGET_SCOPE }}"
           export BUDGET_SCOPE_GRUP="${{ vars.BUDGET_SCOPE_GRUP }}"
           export BUDGET_NAME="${{ vars.BUDGET_NAME }}"
@@ -107,6 +125,8 @@ jobs:
           export BUDGET_END_DATE="${{ vars.BUDGET_END_DATE }}"
           export BUDGET_EMAILS_80="${{ vars.BUDGET_EMAILS_80 }}"
           export BUDGET_EMAILS_90="${{ vars.BUDGET_EMAILS_90 }}"
+
+
           envsubst < common_vars.template.yaml > common_vars.yaml
 
       - name: Validar existencia del módulo
@@ -155,18 +175,24 @@ jobs:
           MODULO="${{ github.event.client_payload.module }}"
           VERSION="${{ github.event.client_payload.version }}"
           INSTALL_TOKEN="${{ steps.app_token.outputs.token }}"
+          echo "module: $MODULO"
+          echo "version: $VERSION"
+
           if [ -z "$INSTALL_TOKEN" ]; then
             echo "❌ El token de instalación está vacío. Abortando."
             exit 1
           fi
-          sed -i -E "s|source *=.*|source = \"git::https://x-access-token:${INSTALL_TOKEN}@github.com/juancamilouni/Azure.Modules.infrastructure//${MODULO}?ref=${VERSION}\"|" terragrunt.hcl
 
+          sed -i -E "s|source *=.*|source = \"git::https://x-access-token:${INSTALL_TOKEN}@github.com/juancamilouni/Azure.Modules.infrastructure//${MODULO}?ref=${VERSION}\"|" terragrunt.hcl
+          
       - name: Verificar y limpiar bloque generate si provider ya existe
         working-directory: ${{ github.event.client_payload.module }}
         run: |
           if grep -q 'provider\s\+\"azurerm\"' *.tf; then
             echo "⚠️ Provider ya definido en archivo .tf. Eliminando bloque 'generate' de provider."
             sed -i '/generate\s\+"provider"/,/EOF/ d' terragrunt.hcl || true
+          else
+            echo "✅ No hay provider definido. Se mantiene el bloque generate."
           fi
 
       - name: Validar y aplicar módulo con Terragrunt
@@ -177,42 +203,37 @@ jobs:
           echo "🌍 Ambiente: ${{ github.event.client_payload.environment }}"
 
           echo "🚀 terragrunt init"
-          terragrunt init -no-color
+          terragrunt init
 
           echo "🔍 terragrunt validate"
-          terragrunt validate -no-color
+          terragrunt validate
 
-          echo "📊 Ejecutando terragrunt plan con control de timeout..."
-          set +e
-          timeout 900s terragrunt plan -no-color > plan_output.log 2>&1
-          PLAN_EXIT=$?
-          set -e
+          echo "📊 Ejecutando terragrunt plan..."
+          terragrunt plan -no-color > plan_output.log 2>&1 || echo "⚠️ Plan fallido, analizando log..."
 
-          echo "📄 Últimas líneas del plan_output.log:"
-          tail -n 50 plan_output.log
+          echo "📄 Contenido de plan_output.log:"
+          cat plan_output.log
 
           if grep -q "Error acquiring the state lock" plan_output.log; then
-            echo "🔒 Se detectó un lock en el estado remoto."
             LOCK_ID=$(grep -oE "[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}" plan_output.log | head -n 1)
             if [ -n "$LOCK_ID" ]; then
               echo "🔓 Ejecutando force-unlock con ID: $LOCK_ID"
-              terragrunt force-unlock -force "$LOCK_ID" || true
-              echo "⏳ Esperando 20 segundos antes de reintentar..."
-              sleep 20
+              terragrunt force-unlock -force "$LOCK_ID"
               echo "♻️ Reintentando terragrunt plan..."
-              timeout 600s terragrunt plan -no-color > plan_output.log 2>&1 || true
-              tail -n 50 plan_output.log
+              terragrunt plan -no-color > plan_output.log 2>&1 || echo "⚠️ Reintento fallido, analizando..."
+              cat plan_output.log
             else
-              echo "⚠️ No se pudo extraer el LOCK_ID. Saltando reintento."
+              echo "❌ No se pudo extraer el LOCK_ID. Abortando."
+              exit 1
             fi
           fi
 
           if grep -E "^│ Error: " plan_output.log; then
-            echo "❌ Error detectado en terragrunt plan. Abortando apply."
+            echo "❌ Error real detectado en terragrunt plan. Abortando apply."
             exit 1
           fi
 
-          echo "✅ Plan exitoso. Ejecutando terragrunt apply..."
-          timeout 1800s terragrunt apply -auto-approve -no-color || exit 1
+          echo "✅ Validación exitosa. Ejecutando terragrunt apply..."
+          terragrunt apply -auto-approve || exit 1
 
           echo "🎉 Despliegue exitoso para ${{ github.event.client_payload.module }} en ${{ github.event.client_payload.environment }} ✅"
