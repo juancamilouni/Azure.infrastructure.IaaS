@@ -27,7 +27,7 @@ inputs = {
   apim_name           = dependency.apim.outputs.apim_name
 
   backend_name = "backend-${local.common_vars.project_name}"
-  backend_url  = "https://precredit-gateway-desarrollo.greenwater-cca983cf.eastus2.azurecontainerapps.io"
+  backend_url  = "https://precredit-gateway-desarrollo.whitepebble-6f88273e.eastus2.azurecontainerapps.io"
 
   api_name        = "api-${local.common_vars.project_name}-${local.common_vars.environment}"
   api_display_name = "${local.common_vars.project_name}-API-${local.common_vars.environment}"
