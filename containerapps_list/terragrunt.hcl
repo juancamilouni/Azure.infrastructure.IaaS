@@ -50,8 +50,8 @@ inputs = {
   image = "acrprecreditdesarrollo.azurecr.io/precredit-list:787"
 
   # ---- Recursos ----
-  container_cpu    = 0.5
-  container_memory = "1Gi"
+  container_cpu    = 1.25
+  container_memory = "2.5Gi"
 
   # ---- Ingress ----
   target_port       = 3000
