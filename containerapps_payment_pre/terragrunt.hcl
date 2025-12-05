@@ -49,6 +49,7 @@ inputs = {
   # ---- Imagen (desde tu ACR) ----
   image = "acrprecreditpreprod.azurecr.io/prequalification-pre:latest"
 
+
   # ---- Recursos ----
   container_cpu    = 1
   container_memory = "2Gi"
