@@ -47,7 +47,7 @@ inputs = {
   environment_id      = dependency.aca_environment.outputs.aca_environment_id
 
   # ---- Imagen (desde tu ACR) ----
-  image = "acrprecreditqa.azurecr.io/precredit-products-qa:latest"
+  image = "acrprecreditprod.azurecr.io/precredit-products-prod:latest"
 
   # ---- Recursos ----
   container_cpu    = 0.5
@@ -63,10 +63,10 @@ inputs = {
   user_assigned_identity_ids = []
 
   # ---- Registro (usa admin username + password) ----
-  registry_server          = "acrprecreditqa.azurecr.io"
-  registry_username        = "acrprecreditqa"
+  registry_server          = "acrprecreditprod.azurecr.io"
+  registry_username        = "acrprecreditprod"
   registry_password_secret = "acr-password"
-  registry_password_value  = "HZBTnoYKFSlGHp8JC2SFzbPLL7vL3Dh9povu51zK1j+ACRBigM0W"
+  registry_password_value  = "5kEN8XrKQnEPl2ajrbKoHADsxr12nhDldt6snUKWQCdk0ICa4hZ3JQQJ99CEACHYHv6Eqg7NAAACAZCRAW57"
 
   # ---- Escalado ----
   min_replicas     = 1
