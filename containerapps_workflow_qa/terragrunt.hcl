@@ -47,7 +47,7 @@ inputs = {
   environment_id      = dependency.aca_environment.outputs.aca_environment_id
 
   # ---- Imagen (desde tu ACR) ----
-  image = "acrprecreditdesarrollo.azurecr.io/prequalification:latest"
+  image = "acrprecreditqa.azurecr.io/precredit-products-qa:latest"
 
   # ---- Recursos ----
   container_cpu    = 1
